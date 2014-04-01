@@ -1,0 +1,152 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-04-01 15:59-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: activity/activity.info:2 tasks.py:43
+msgid "One Support"
+msgstr ""
+
+#: activity/activity.info:3
+msgid "a tool for sending bug reports"
+msgstr ""
+
+#: activity.py:280
+msgid "View"
+msgstr ""
+
+#: activity.py:288
+msgid "Fullscreen"
+msgstr ""
+
+#: activity.py:295
+msgid "Increase size"
+msgstr ""
+
+#: activity.py:301
+msgid "Decrease size"
+msgstr ""
+
+#: activity.py:307
+msgid "Restore original size"
+msgstr ""
+
+#: activity.py:317
+msgid "Edit"
+msgstr ""
+
+#: activity.py:325
+msgid "Copy"
+msgstr ""
+
+#: activity.py:333
+msgid "Paste"
+msgstr ""
+
+#: taskmaster.py:93
+msgid "Refresh"
+msgstr ""
+
+#: taskmaster.py:107 graphics.py:288
+msgid "Yes"
+msgstr ""
+
+#: taskmaster.py:112 tasks.py:69 tasks.py:163
+msgid "Next"
+msgstr ""
+
+#: taskmaster.py:117 graphics.py:290
+msgid "No"
+msgstr ""
+
+#: taskmaster.py:129
+msgid "My Turn"
+msgstr ""
+
+#: taskmaster.py:134
+msgid "Skip this section"
+msgstr ""
+
+#: taskmaster.py:212
+msgid "Exit"
+msgstr ""
+
+#: tasks.py:106
+msgid "Success!"
+msgstr ""
+
+#: tasks.py:110
+msgid "Keep trying"
+msgstr ""
+
+#: tasks.py:206
+msgid "Support"
+msgstr ""
+
+#: tasks.py:209
+msgid "Let's go!"
+msgstr ""
+
+#: tasks.py:236
+msgid "Enter Your Name"
+msgstr ""
+
+#: tasks.py:283
+msgid "First name(s):"
+msgstr ""
+
+#: tasks.py:283
+msgid "Last name(s):"
+msgstr ""
+
+#: tasks.py:311
+msgid "Greetings"
+msgstr ""
+
+#: tasks.py:334
+msgid "Enter Your Email"
+msgstr ""
+
+#: tasks.py:397
+msgid "Validate Email"
+msgstr ""
+
+#: tasks.py:474
+msgid "Enter Your Phone Number"
+msgstr ""
+
+#: tasks.py:541
+msgid "Enter School Name"
+msgstr ""
+
+#: tasks.py:712
+msgid ""
+"Your school does not appear in our list of schools in Australia. OK to "
+"continue?"
+msgstr ""
+
+#: tasks.py:782
+msgid "Confirmation"
+msgstr ""
+
+#: tasks.py:825
+msgid "Enter Your Bug Report"
+msgstr ""
+
+#: tasks.py:831
+msgid "Submit"
+msgstr ""

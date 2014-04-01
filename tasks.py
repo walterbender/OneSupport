@@ -497,52 +497,12 @@ class Support6Task(HTMLTask):
         return self._valid_number(entry)
 
     def _valid_number(self, phone_number):
-        # xx xxxx xxxx (AU)
-        pattern = re.compile("(^[\dA-Z]{2}) [\dA-Z]{4} [\dA-Z]{4}$",
+        phone_number = phone_number.replace(' ', '')
+        phone_number = phone_number.replace('-', '')
+
+        pattern = re.compile('(^[+0-9]{1,3})*([0-9]{10,11}$)',
                              re.IGNORECASE)
-        if pattern.match(phone_number) is not None:
-            return True
-        # xxxx xxx xxx (AU)
-        pattern = re.compile("^[\dA-Z]{4} [\dA-Z]{3} [\dA-Z]{3}$",
-                             re.IGNORECASE)
-        if pattern.match(phone_number) is not None:
-            return True
-        # +61 xxx xxx xxx (AU)
-        pattern = re.compile("\+61 [\dA-Z]{3} [\dA-Z]{3} [\dA-Z]{3}$",
-                             re.IGNORECASE)
-        if pattern.match(phone_number) is not None:
-            return True
-        # +61 x xxxx xxxx (AU)
-        pattern = re.compile("\+61 [\dA-Z]{1} [\dA-Z]{4} [\dA-Z]{4}$",
-                             re.IGNORECASE)
-        if pattern.match(phone_number) is not None:
-            return True
-        # xxx-xxx-xxxx (US)
-        pattern = re.compile("^[\dA-Z]{3}-[\dA-Z]{3}-[\dA-Z]{4}$",
-                             re.IGNORECASE)
-        if pattern.match(phone_number) is not None:
-            return True
-        # xxx xxx xxxx (US)
-        pattern = re.compile("^[\dA-Z]{3} [\dA-Z]{3} [\dA-Z]{4}$",
-                             re.IGNORECASE)
-        if pattern.match(phone_number) is not None:
-            return True
-        # xxxxxxxxxx (US)
-        pattern = re.compile("^[\dA-Z]{3}[\dA-Z]{3}[\dA-Z]{4}$",
-                             re.IGNORECASE)
-        if pattern.match(phone_number) is not None:
-            return True
-        # +1-xxx-xxx-xxxx (US)
-        pattern = re.compile("\+1-^[\dA-Z]{3}-[\dA-Z]{3}-[\dA-Z]{4}$",
-                             re.IGNORECASE)
-        if pattern.match(phone_number) is not None:
-            return True
-        # 1-xxx-xxx-xxxx (US)
-        pattern = re.compile("1-^[\dA-Z]{3}-[\dA-Z]{3}-[\dA-Z]{4}$",
-                             re.IGNORECASE)
-        if pattern.match(phone_number) is not None:
-            return True
-        return False
+        return pattern.match(phone_number) is not None
 
     def after_button_press(self):
         _logger.debug('Writing phone number: %s' % self._entry.get_text())

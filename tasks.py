@@ -24,7 +24,7 @@ from sugar3.datastore import datastore
 import logging
 _logger = logging.getLogger('training-activity-tasks')
 
-from activity import (NAME_UID, EMAIL_UID, SCHOOL_UID, ROLE_UID, SCHOOL_NAME,
+from activity import (NAME_UID, EMAIL_UID, SCHOOL_UID, SCHOOL_NAME,
                       POST_CODE, PHONE_NUMBER_UID)
 from graphics import Graphics, FONT_SIZES
 import utils
@@ -36,22 +36,7 @@ _ENTER_EMAIL_TASK = 'enter-email-task'
 _VALIDATE_EMAIL_TASK = 'validate-email-task'
 _ENTER_PHONE_NUMBER_TASK = 'enter-phone-number-task'
 _ENTER_SCHOOL_TASK = 'enter-school-task'
-_ENTER_ROLE_TASK = 'enter-role-task'
 _ENTER_BUG_REPORT_TASK = 'enter-bug-report-task'
-
-_ROLES = {
-    'Teacher': [_('Teacher'), True],
-    'Principal': [_('Principal'), True],
-    'ICT Coordinator': [_('ICT Coordinator'), True],
-    'Assistant Teacher': [_('Assistant Teacher'), True],
-    'Assistant Principal': [_('Assistant Principal'), True],
-    'Volunteer': [_('Volunteer'), False],
-    'Parent': [_('Parent'), False],
-    'Community': [_('Community'), False],
-    'School Administrator': [_('School Administrator'), True],
-    'Curriculum Coach': [_('Curriculum Coach'), True],
-    'Pre Service Teachers': [_('Pre-service Teacher'), True]}
-
 
 def get_tasks(task_master):
     task_list = [
@@ -64,7 +49,6 @@ def get_tasks(task_master):
                    Support5Task(task_master),
                    Support6Task(task_master),
                    Support7Task(task_master),
-                   Support8Task(task_master),
                    Support9Task(task_master),
                    Support10Task(task_master)]},
     ]
@@ -768,77 +752,12 @@ class Support8Task(HTMLTask):
 
     def __init__(self, task_master):
         HTMLTask.__init__(self, task_master)
-        self._name = _('Enter Roll')
-        self.uid = _ENTER_ROLE_TASK
-        self._uri = 'support8.html'
-        self._height = 60
-        self._graphics = None
-        self._role = None
-        self._buttons = None
-        self._task_data = None
-
-    def is_collectable(self):
-        return True
-
-    def after_button_press(self):
-        self._task_master.write_task_data(ROLE_UID, self._role)
-        return True
-
-    def _role_button_callback(self, widget, roll):
-        for button in self._buttons:
-            button.set_sensitive(not button == widget)
-        self._role = 'Other'
-        for key in _ROLES.keys():
-            if _ROLES[key][0] == roll:
-                self._role = key
-                _logger.debug(self._role)
-                break
-
-    def test(self, task_data):
-        if self._task_data is None:
-            self._task_data = task_data
-        return not self._role is None
-
-    def get_graphics(self):
-        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
-                           self._uri)
-
-        graphics = Graphics()
-        webkit = graphics.add_uri('file://' + url, height=self._height)
-        graphics.set_zoom_level(self._zoom_level)
-        roles = []
-        for key in sorted(_ROLES.keys()):
-            roles.append(_ROLES[key][0])
-        roles.append(_('Other'))
-
-        self._role = self._task_master.read_task_data(ROLE_UID)
-
-        self._buttons = graphics.add_list_buttons(roles)
-        for i, button in enumerate(self._buttons):
-            button.connect('clicked', self._role_button_callback, roles[i])
-            if self._role in _ROLES.keys() and \
-               _ROLES[self._role][0] == roles[i]:
-                button.set_sensitive(False)
-        if self._role == 'Other':
-            self._buttons[-1].set_sensitive(False)
-
-        self._task_master.activity.set_copy_widget(webkit=webkit)
-        self._task_master.activity.set_paste_widget()
-
-        return graphics, self._prompt
-
-
-class Support9Task(HTMLTask):
-
-    def __init__(self, task_master):
-        HTMLTask.__init__(self, task_master)
         self._name = _('Support')
-        self.uid = 'support-9-task'
-        self._uri = 'support9.html'
+        self.uid = 'support-8-task'
+        self._uri = 'support8.html'
 
     def get_requires(self):
-        return [_ENTER_NAME_TASK, _VALIDATE_EMAIL_TASK, _ENTER_SCHOOL_TASK,
-                _ENTER_ROLE_TASK]
+        return [_ENTER_NAME_TASK, _VALIDATE_EMAIL_TASK, _ENTER_SCHOOL_TASK]
 
     def get_graphics(self):
         self._entries = []
@@ -854,17 +773,13 @@ class Support9Task(HTMLTask):
         school = self._task_master.read_task_data(SCHOOL_NAME)
         if school is None:  # Should never happen
             school = ''
-        role = self._task_master.read_task_data(ROLE_UID)
-        if role is None:  # Should never happen
-            role = ''
         url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
                            '%s?NAME=%s&EMAIL=%s&PHONE=%s&SCHOOL=%s&ROLE=%s' %
                            (self._uri,
                             utils.get_safe_text(name),
                             utils.get_safe_text(email),
                             utils.get_safe_text(phone_number),
-                            utils.get_safe_text(school),
-                            utils.get_safe_text(role)))
+                            utils.get_safe_text(school))
 
         graphics = Graphics()
         webkit = graphics.add_uri('file://' + url, height=400)

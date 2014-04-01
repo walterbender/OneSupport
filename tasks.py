@@ -840,6 +840,9 @@ class Support9Task(HTMLTask):
         return True
 
     def after_button_press(self):
+        if self._task_master.completed:
+            return True
+
         text_buffer = self._entry.get_buffer()
         bounds = text_buffer.get_bounds()
         text = text_buffer.get_text(bounds[0], bounds[1], True)

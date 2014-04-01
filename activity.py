@@ -88,7 +88,7 @@ class OneSupportActivity(activity.Activity):
         self.zoom_level = self.font_size / float(len(FONT_SIZES))
         _logger.debug('zoom level is %f' % self.zoom_level)
 
-        # _check_gconf_settings()  # For debugging purposes        
+        _check_gconf_settings()  # For debugging purposes        
 
         self._setup_toolbars()
         self.modify_bg(Gtk.StateType.NORMAL,
@@ -114,7 +114,7 @@ class OneSupportActivity(activity.Activity):
         self.get_window().set_cursor(Gdk.Cursor.new(Gdk.CursorType.WATCH))
 
     def reset_cursor(self):
-        self.get_window().set_cursor()
+        self.get_window().set_cursor(Gdk.Cursor.new(Gdk.CursorType.LEFT_PTR))
 
     def _launch_task_master(self):
         # Most things need only be done once

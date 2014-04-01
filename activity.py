@@ -111,12 +111,10 @@ class OneSupportActivity(activity.Activity):
         return True
 
     def busy_cursor(self):
-        self._old_cursor = self.get_window().get_cursor()
         self.get_window().set_cursor(Gdk.Cursor.new(Gdk.CursorType.WATCH))
 
     def reset_cursor(self):
-        if hasattr(self, '_old_cursor'):
-            self.get_window().set_cursor(self._old_cursor)
+        self.get_window().set_cursor()
 
     def _launch_task_master(self):
         # Most things need only be done once

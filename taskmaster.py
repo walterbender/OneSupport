@@ -199,7 +199,6 @@ class TaskMaster(Gtk.Alignment):
             self._first_time = True
             self._run_task(section_index, task_index)
         else:
-            self.activity.reset_cursor()
             self._destroy_graphics()
             graphics = Graphics()
             self._graphics = graphics
@@ -213,6 +212,7 @@ class TaskMaster(Gtk.Alignment):
             self._graphics.show()
 
             # Activity will close after this button is clicked
+            _logger.debug('setting completed to True')
             self.completed = True
             self.task_button.set_label(_('Exit'))
 
@@ -224,7 +224,7 @@ class TaskMaster(Gtk.Alignment):
         if task.after_button_press():
             self.current_task += 1
             if self.completed:
-                GObject.idle_add(self._task_master.activity.close)
+                GObject.idle_add(self.activity.close)
             else:
                 self.task_master()
 
@@ -243,9 +243,10 @@ class TaskMaster(Gtk.Alignment):
                 self._jump_to_task_cb(None, 'no')
             else:
                 self.current_task += 1
-                # FIXME
-                # self.write_task_data('current_task', self.current_task)
-                self.task_master()
+                if self.completed:
+                    GObject.idle_add(self.activity.close)
+                else:
+                    self.task_master()
 
     def _my_turn_button_cb(self, button):
         ''' Take me to the Home Page and select favorites view. '''

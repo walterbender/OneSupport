@@ -854,6 +854,7 @@ class Support9Task(HTMLTask):
 
     def _send_report(self, data):
         send_report(data)
+        self._task_master.activity.reset_cursor()
 
     def get_graphics(self):
         url = os.path.join(self._task_master.get_bundle_path(), 'html-content',

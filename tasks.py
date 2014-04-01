@@ -16,10 +16,7 @@ import re
 from gettext import gettext as _
 
 from gi.repository import GObject
-from gi.repository import Gtk
 from gi.repository import Gdk
-
-from sugar3.datastore import datastore
 
 import logging
 _logger = logging.getLogger('training-activity-tasks')
@@ -37,6 +34,7 @@ _VALIDATE_EMAIL_TASK = 'validate-email-task'
 _ENTER_PHONE_NUMBER_TASK = 'enter-phone-number-task'
 _ENTER_SCHOOL_TASK = 'enter-school-task'
 _ENTER_BUG_REPORT_TASK = 'enter-bug-report-task'
+
 
 def get_tasks(task_master):
     task_list = [
@@ -210,11 +208,11 @@ class Support1Task(HTMLTask):
 
     def get_graphics(self):
         name = self._task_master.read_task_data(NAME_UID)
-        email = self._task_master.read_task_data(EMAIL_UID)
+        email_address = self._task_master.read_task_data(EMAIL_UID)
         phone_number = self._task_master.read_task_data(PHONE_NUMBER_UID)
         school = self._task_master.read_task_data(SCHOOL_NAME)
 
-        if name is None or email is None or phone_number is None or \
+        if name is None or email_address is None or phone_number is None or \
            school is None:
             url = os.path.join(self._task_master.get_bundle_path(),
                                'html-content', self._uri[0])
@@ -359,15 +357,15 @@ class Support4Task(HTMLTask):
         return True
 
     def get_graphics(self):
-        email = self._task_master.read_task_data(EMAIL_UID)
+        email_address = self._task_master.read_task_data(EMAIL_UID)
         url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
                            self._uri)
 
         graphics = Graphics()
         graphics.add_uri('file://' + url, height=self._height)
         graphics.set_zoom_level(self._zoom_level)
-        if email is not None:
-            self._entry = graphics.add_entry(text=email)
+        if email_address is not None:
+            self._entry = graphics.add_entry(text=email_address)
         else:
             self._entry = graphics.add_entry()
 
@@ -422,21 +420,21 @@ class Support5Task(HTMLTask):
 
     def get_graphics(self):
         self._entries = []
-        email = self._task_master.read_task_data(EMAIL_UID)
+        email_address = self._task_master.read_task_data(EMAIL_UID)
         url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
                            self._uri)
 
         graphics = Graphics()
-        if email is None:
-            # This should not happen except if data file is corrupted
+        if email_address is None:
+            # This should not happen except if gconf is corrupted
             self._entries.append(graphics.add_entry(text=''))
             _logger.error('email was missing in Task %s' % self.uid)
         else:
-            self._entries.append(graphics.add_entry(text=email))
+            self._entries.append(graphics.add_entry(text=email_address))
         graphics.add_uri('file://' + url, height=400)
         graphics.set_zoom_level(self._zoom_level)
-        if email is None:  # Should never happen
-            email = ''
+        if email_address is None:  # Should never happen
+            email_address = ''
         self._entries.append(graphics.add_entry())
 
         self._entries[0].connect('activate', self._enter_entered)
@@ -604,7 +602,7 @@ class Support7Task(HTMLTask):
                     if int(postal_code) != self._postal_code:
                         continue
                 except:
-                    _logger.error('bad postal code? (%s: %s)' % 
+                    _logger.error('bad postal code? (%s: %s)' %
                                   (name, postal_code))
                     continue
                 if len(campus) > 0:
@@ -767,9 +765,9 @@ class Support8Task(HTMLTask):
         name = self._task_master.read_task_data(NAME_UID)
         if name is None:  # Should never happen
             name = ''
-        email = self._task_master.read_task_data(EMAIL_UID)
-        if email is None:  # Should never happen
-            email = ''
+        email_address = self._task_master.read_task_data(EMAIL_UID)
+        if email_address is None:  # Should never happen
+            email_address = ''
         phone_number = self._task_master.read_task_data(PHONE_NUMBER_UID)
         if phone_number is None:  # Should never happen
             phone_number = ''
@@ -780,7 +778,7 @@ class Support8Task(HTMLTask):
                            '%s?NAME=%s&EMAIL=%s&PHONE=%s&SCHOOL=%s' %
                            (self._uri,
                             utils.get_safe_text(name),
-                            utils.get_safe_text(email),
+                            utils.get_safe_text(email_address),
                             utils.get_safe_text(phone_number),
                             utils.get_safe_text(school)))
 
@@ -830,9 +828,9 @@ class Support9Task(HTMLTask):
         name = self._task_master.read_task_data(NAME_UID)
         if name is None:  # Should never happen
             name = ''
-        email = self._task_master.read_task_data(EMAIL_UID)
-        if email is None:  # Should never happen
-            email = ''
+        email_address = self._task_master.read_task_data(EMAIL_UID)
+        if email_address is None:  # Should never happen
+            email_address = ''
         phone_number = self._task_master.read_task_data(PHONE_NUMBER_UID)
         if phone_number is None:  # Should never happen
             phone_number = ''
@@ -842,8 +840,8 @@ class Support9Task(HTMLTask):
 
         data = {'subject': 'bug report from One Support',
                 'body': text,
-                'name': name, 
-                'email': email,
+                'name': name,
+                'email': email_address,
                 'school': school,
                 'phone': phone_number,
                 'serial': utils.get_serial_number(),

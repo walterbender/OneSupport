@@ -11,8 +11,6 @@
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
 import os
-import json
-import time
 from gettext import gettext as _
 
 from gi.repository import Gtk
@@ -21,7 +19,6 @@ from gi.repository import GObject
 from gi.repository import GConf
 
 from sugar3.graphics import style
-from sugar3.graphics.toolbutton import ToolButton
 
 import logging
 _logger = logging.getLogger('one-support-taskmaster')
@@ -255,13 +252,11 @@ class TaskMaster(Gtk.Alignment):
         # Don't skip off the end
         if section_index == self.get_number_of_sections():
             section_index = 0
-            task_index = 0
 
         # Don't skip to last section unless all requirements are met
         if section_index == self.get_number_of_sections() - 1 and \
            not self.requirements_are_met(section_index, 0, switch_task=False):
             section_index = 0
-            task_index = 0
 
         task = self._task_list[section_index]['tasks'][0]
         self.current_task = self.uid_to_task_number(task.uid)
@@ -340,7 +335,6 @@ class TaskMaster(Gtk.Alignment):
                 if task.is_collectable():
                     section_requirements.append(task.uid)
                     all_requirements.append(task.uid)
-            last = len(section['tasks']) - 1
         self._task_list[-1]['tasks'][-1].set_requires(all_requirements)
 
     def requirements_are_met(self, section_index, task_index,
@@ -615,4 +609,3 @@ class TaskMaster(Gtk.Alignment):
     def write_task_data(self, uid, data):
         client = GConf.Client.get_default()
         client.set_string('/desktop/sugar/support/%s' % uid, data)
-

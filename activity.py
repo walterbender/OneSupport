@@ -12,15 +12,11 @@
 
 import dbus
 import os
-import json
-import subprocess
 from ConfigParser import ConfigParser
 from gettext import gettext as _
 
-from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GObject
 from gi.repository import GConf
 
 from gi.repository import SugarExt
@@ -28,11 +24,9 @@ from gi.repository import SugarExt
 from sugar3.activity import activity
 from sugar3.activity.widgets import StopButton
 from sugar3.activity.widgets import ActivityToolbarButton
-from sugar3.graphics.radiotoolbutton import RadioToolButton
 from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.toolbarbox import ToolbarBox
 from sugar3.graphics.toolbarbox import ToolbarButton
-from sugar3.graphics.alert import ConfirmationAlert
 from sugar3.graphics import style
 
 NAME_UID = 'name'
@@ -88,7 +82,7 @@ class OneSupportActivity(activity.Activity):
         self.zoom_level = self.font_size / float(len(FONT_SIZES))
         _logger.debug('zoom level is %f' % self.zoom_level)
 
-        _check_gconf_settings()  # For debugging purposes        
+        # _check_gconf_settings()  # For debugging purposes
 
         self._setup_toolbars()
         self.modify_bg(Gtk.StateType.NORMAL,

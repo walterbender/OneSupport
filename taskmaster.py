@@ -60,16 +60,11 @@ class TaskMaster(Gtk.Alignment):
         self._email = None
         self._graphics = None
         self._first_time = True
-        self._accumulated_time = 0
         self._yes_task = None
         self._no_task = None
         self._task_list = tasks.get_tasks(self)
         self._task_data = None
-        self._sugar_data_path = None
-        self._resync_required = False
         self._uid = None
-        self._start_time = time.time()
-        self._accumulated_time = 0
 
         self._assign_required()
 
@@ -169,13 +164,13 @@ class TaskMaster(Gtk.Alignment):
     def task_master(self):
         ''' 'nough said. '''
 
-        _logger.debug('Running task %d' % (self.current_task))
+        _logger.debug('Running step %d' % (self.current_task))
         self._destroy_graphics()
         self.activity.button_was_pressed = False
         if self.current_task < self._get_number_of_tasks():
             section_index, task_index = self.get_section_and_task_index()
 
-            # Do we skip this task?
+            # Do we skip this step?
             task = self._task_list[section_index]['tasks'][task_index]
             while(task.is_completed() and task.skip_if_completed()):
                 _logger.debug('Skipping task %d' % task_index)
@@ -250,19 +245,11 @@ class TaskMaster(Gtk.Alignment):
 
     def _my_turn_button_cb(self, button):
         ''' Take me to the Home Page and select favorites view. '''
-        # First, make sure current task data is saved.
-        # FIXME
-        # self.write_current_task_data()
-
         utils.goto_home_view()
         utils.select_favorites_view()
 
     def _skip_button_cb(self, button):
         ''' Jump to next section '''
-        # First, make sure current task data is saved.
-        # FIXME
-        # self.write_current_task_data()
-
         section_index, task_index = self.get_section_and_task_index()
         section_index += 1
 
@@ -343,8 +330,6 @@ class TaskMaster(Gtk.Alignment):
             uid = self._no_task
         self.current_task = self.uid_to_task_number(uid)
 
-        # FIXME
-        # self.write_task_data('current_task', self.current_task)
         self.activity.progress_buttons[section_index].set_active(True)
         self.task_master()
 
@@ -358,8 +343,6 @@ class TaskMaster(Gtk.Alignment):
                     section_requirements.append(task.uid)
                     all_requirements.append(task.uid)
             last = len(section['tasks']) - 1
-            if section['tasks'][last].uid[0:5] == 'badge':
-                section['tasks'][last].set_requires(section_requirements)
         self._task_list[-1]['tasks'][-1].set_requires(all_requirements)
 
     def requirements_are_met(self, section_index, task_index,
@@ -490,19 +473,6 @@ class TaskMaster(Gtk.Alignment):
     def _get_number_of_tasks_in_section(self, section_index):
         return len(self._task_list[section_index]['tasks'])
 
-    def _get_number_of_collectables_in_section(self, section_index):
-        count = 0
-        for task in self._task_list[section_index]['tasks']:
-            if task.is_collectable():
-                count += 1
-        return count
-
-    def _get_number_of_collectables(self):
-        count = 0
-        for section_index in range(len(self._task_list)):
-            count += self._get_number_of_collectables_in_section(section_index)
-        return count
-
     def _get_number_of_tasks(self):
         count = 0
         for section in self._task_list:
@@ -521,22 +491,6 @@ class TaskMaster(Gtk.Alignment):
                         return task
         _logger.error('UID %s not found' % uid)
         return self._task_list[0]['tasks'][0]
-
-    def _get_number_of_completed_tasks(self):
-        count = 0
-        for section in self._task_list:
-            for task in section['tasks']:
-                if task.is_completed():
-                    count += 1
-        return count
-
-    def _get_number_of_completed_collectables(self):
-        count = 0
-        for section in self._task_list:
-            for task in section['tasks']:
-                if task.is_collectable() and task.is_completed():
-                    count += 1
-        return count
 
     def _prev_task_button_cb(self, button):
         section_index, task_index = self.get_section_and_task_index()
@@ -615,7 +569,7 @@ class TaskMaster(Gtk.Alignment):
             else:
                 name = ''
 
-            uid = ''
+            uid = ' '
 
             self._progress_bar = ProgressBar(
                 name,

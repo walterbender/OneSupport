@@ -63,7 +63,6 @@ class TaskMaster(Gtk.Alignment):
         self._yes_task = None
         self._no_task = None
         self._task_list = tasks.get_tasks(self)
-        self._task_data = None
         self._uid = None
 
         self._assign_required()
@@ -211,7 +210,7 @@ class TaskMaster(Gtk.Alignment):
             self.completed = True
             self.task_button.set_label(_('Exit'))
 
-    def enter_entered(self, task_data, uid):
+    def enter_entered(self):
         ''' Enter was entered in a text entry '''
         self.button_was_pressed = True
         section_index, task_index = self.get_section_and_task_index()
@@ -298,16 +297,15 @@ class TaskMaster(Gtk.Alignment):
         if self._first_time:
             self._uid = task.uid
             self._load_graphics()
-            self._task_data = None
             self._first_time = False
 
         GObject.timeout_add(task.get_pause_time(), self._test, task.test,
-                            self._task_data, self._uid)
+                            self._uid)
 
-    def _test(self, test, task_data, uid):
+    def _test(self, test, uid):
         ''' Is the task complete? '''
 
-        if test(task_data):
+        if test():
             if self.task_button is not None:
                 self.task_button.set_sensitive(True)
         else:
@@ -373,7 +371,7 @@ class TaskMaster(Gtk.Alignment):
         section_index, task_index = self.get_section_and_task_index()
         task = self._task_list[section_index]['tasks'][task_index]
         self._uid = self.section_and_task_to_uid(section_index, task_index)
-        self._test(task.test, self._task_data, self._uid)
+        self._test(task.test, self._uid)
 
     def _destroy_graphics(self):
         ''' Destroy the graphics from the previous task '''

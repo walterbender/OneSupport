@@ -90,7 +90,7 @@ class Task():
     zoom_level = GObject.property(type=object, setter=set_zoom_level,
                                   getter=get_zoom_level)
 
-    def test(self, task_data):
+    def test(self):
         ''' The test to determine if task is completed '''
         raise NotImplementedError
 
@@ -182,7 +182,7 @@ class HTMLTask(Task):
         self._uri = 'introduction1.html'
         self._height = 610
 
-    def test(self, task_data):
+    def test(self):
         return self._task_master.button_was_pressed
 
     def get_graphics(self):
@@ -239,10 +239,6 @@ class Support2Task(Task):
         self._first_entry = None
         self._last_entry = None
         self._height = 400
-        self._task_data = None
-
-    def is_collectable(self):
-        return True
 
     def _first_enter_entered(self, widget):
         # Switch focus to last entry
@@ -252,10 +248,9 @@ class Support2Task(Task):
     def _last_enter_entered(self, widget):
         if len(self._first_entry.get_text()) > 1 and \
            len(self._last_entry.get_text()) > 1:
-            self._task_master.enter_entered(self._task_data, self.uid)
+            self._task_master.enter_entered()
 
-    def test(self, task_data):
-        self._task_data = task_data
+    def test(self):
         return len(self._first_entry.get_text()) > 1 and \
             len(self._last_entry.get_text()) > 1
 
@@ -336,18 +331,15 @@ class Support4Task(HTMLTask):
         self._uri = 'support4.html'
         self._entry = None
         self._height = 400
-        self._task_data = None
 
     def get_requires(self):
         return [_ENTER_NAME_TASK]
 
     def _enter_entered(self, widget):
         if self._is_valid_email_entry():
-            self._task_master.enter_entered(self._task_data, self.uid)
+            self._task_master.enter_entered()
 
-    def test(self, task_data):
-        if self._task_data is None:
-            self._task_data = task_data
+    def test(self):
         return self._is_valid_email_entry()
 
     def _is_valid_email_entry(self):
@@ -398,21 +390,15 @@ class Support5Task(HTMLTask):
         self.uid = _VALIDATE_EMAIL_TASK
         self._uri = 'support5.html'
         self._entries = []
-        self._task_data = None
-
-    def is_collectable(self):
-        return True
 
     def get_requires(self):
         return [_ENTER_EMAIL_TASK]
 
     def _enter_entered(self, widget):
         if self._is_valid_email_entry():
-            self._task_master.enter_entered(self._task_data, self.uid)
+            self._task_master.enter_entered()
 
-    def test(self, task_data):
-        if self._task_data is None:
-            self._task_data = task_data
+    def test(self):
         return self._is_valid_email_entry()
 
     def _is_valid_email_entry(self):
@@ -476,18 +462,15 @@ class Support6Task(HTMLTask):
         self._uri = 'support6.html'
         self._entry = None
         self._height = 400
-        self._task_data = None
 
     def get_requires(self):
         return [_VALIDATE_EMAIL_TASK]
 
     def _enter_entered(self, widget):
         if self._is_valid_phone_entry():
-            self._task_master.enter_entered(self._task_data, self.uid)
+            self._task_master.enter_entered()
 
-    def test(self, task_data):
-        if self._task_data is None:
-            self._task_data = task_data
+    def test(self):
         return self._is_valid_phone_entry()
 
     def _is_valid_phone_entry(self):
@@ -554,10 +537,6 @@ class Support7Task(HTMLTask):
         self._results = []
         self._default_sf_id = '0019000000pETbT'
         self._completer = None
-        self._task_data = None
-
-    def is_collectable(self):
-        return True
 
     def _postal_code_enter_entered(self, widget):
         # Force new list
@@ -589,11 +568,9 @@ class Support7Task(HTMLTask):
 
     def _school_enter_entered(self, widget):
         if self._is_valid_school_entry():
-            self._task_master.enter_entered(self._task_data, self.uid)
+            self._task_master.enter_entered()
 
-    def test(self, task_data):
-        if self._task_data is None:
-            self._task_data = task_data
+    def test(self):
         return self._is_valid_school_entry()
 
     def _is_valid_school_entry(self):
@@ -688,8 +665,6 @@ class Support7Task(HTMLTask):
             self._task_master.write_task_data(SCHOOL_UID, None)
             school = self._school_entry.get_text()
             postal_code = self._postal_code_entry.get_text()
-            self._task_data[SCHOOL_NAME] = school
-            self._task_data[POST_CODE] = postal_code
             self._task_master.write_task_data(self.uid, self._task_data)
             self._task_master.write_task_data(SCHOOL_NAME, school)
             self._task_master.write_task_data(POST_CODE, postal_code)
@@ -784,7 +759,8 @@ class Support8Task(HTMLTask):
         self._uri = 'support8.html'
 
     def get_requires(self):
-        return [_ENTER_NAME_TASK, _VALIDATE_EMAIL_TASK, _ENTER_SCHOOL_TASK]
+        return [_ENTER_NAME_TASK, _VALIDATE_EMAIL_TASK, _ENTER_SCHOOL_TASK,
+                _ENTER_PHONE_NUMBER_TASK]
 
     def get_graphics(self):
         self._entries = []
@@ -827,15 +803,12 @@ class Support9Task(HTMLTask):
         self._uri = ['support9a.html', 'support9b.html']
         self._entry = None
         self._height = 60
-        self._task_data = None
         self._prompt = _('Submit')
 
     def get_requires(self):
         return [_VALIDATE_EMAIL_TASK]
 
-    def test(self, task_data):
-        if self._task_data is None:
-            self._task_data = task_data
+    def test(self):
         return self._is_valid_bug_report_entry()
 
     def _is_valid_bug_report_entry(self):

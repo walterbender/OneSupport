@@ -1,7 +1,5 @@
 GtkTextView#bug-report {
-    background-color: #f0f0f0;
-    background: #f0f0f0;
-    font: 18;
+    font: 18px;
 }
 
 GtkButton#select-button {

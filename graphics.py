@@ -195,11 +195,10 @@ class Graphics(Gtk.Alignment):
                                          style.GRID_CELL_SIZE * 6)
         scrolled_window.set_policy(Gtk.PolicyType.NEVER,
                                    Gtk.PolicyType.AUTOMATIC)
+        scrolled_window.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
         entry = Gtk.TextView(name='bug-report')
         entry.set_wrap_mode(Gtk.WrapMode.WORD)
         entry.set_pixels_above_lines(0)
-        entry.set_size_request(style.GRID_CELL_SIZE * 8,
-                               style.GRID_CELL_SIZE * 6)
         text_buffer = entry.get_buffer()
         text_buffer.set_text(text)
         scrolled_window.add_with_viewport(entry)

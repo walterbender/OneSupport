@@ -49,8 +49,8 @@ def get_tasks(task_master):
                    Support5Task(task_master),
                    Support6Task(task_master),
                    Support7Task(task_master),
-                   Support9Task(task_master),
-                   Support10Task(task_master)]},
+                   Support8Task(task_master),
+                   Support9Task(task_master)]},
     ]
     return task_list
 
@@ -774,12 +774,12 @@ class Support8Task(HTMLTask):
         if school is None:  # Should never happen
             school = ''
         url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
-                           '%s?NAME=%s&EMAIL=%s&PHONE=%s&SCHOOL=%s&ROLE=%s' %
+                           '%s?NAME=%s&EMAIL=%s&PHONE=%s&SCHOOL=%s' %
                            (self._uri,
                             utils.get_safe_text(name),
                             utils.get_safe_text(email),
                             utils.get_safe_text(phone_number),
-                            utils.get_safe_text(school))
+                            utils.get_safe_text(school)))
 
         graphics = Graphics()
         webkit = graphics.add_uri('file://' + url, height=400)
@@ -791,13 +791,13 @@ class Support8Task(HTMLTask):
         return graphics, self._prompt
 
 
-class Support10Task(HTMLTask):
+class Support9Task(HTMLTask):
 
     def __init__(self, task_master):
         HTMLTask.__init__(self, task_master)
         self._name = _('Enter Your Bug Report')
         self.uid = _ENTER_BUG_REPORT_TASK
-        self._uri = 'support10.html'
+        self._uri = 'support9.html'
         self._entry = None
         self._height = 200
         self._task_data = None
@@ -837,9 +837,6 @@ class Support10Task(HTMLTask):
         school = self._task_master.read_task_data(SCHOOL_NAME)
         if school is None:  # Should never happen
             school = ''
-        role = self._task_master.read_task_data(ROLE_UID)
-        if role is None:  # Should never happen
-            role = ''
 
         # FIXME
         data = {'subject': 'bug report from One Support',
@@ -851,9 +848,13 @@ class Support10Task(HTMLTask):
                 'serial': 'unknown',
                 'build': 'unknown',
                 'files': []}
-        GObject.idle_add(send_report, data)
 
-        self._task_master.completed = True
+        self._task_master.activity.busy_cursor()
+        GObject.idle_add(_send_report, data)
+
+    def _send_report(self, data):
+        _logger.debug('sending report')
+        self._send_report(data)
         return True
 
     def get_graphics(self):

@@ -199,6 +199,7 @@ class TaskMaster(Gtk.Alignment):
             self._first_time = True
             self._run_task(section_index, task_index)
         else:
+            self.activity.reset_cursor()
             self._destroy_graphics()
             graphics = Graphics()
             self._graphics = graphics
@@ -229,7 +230,10 @@ class TaskMaster(Gtk.Alignment):
             self.current_task += 1
             # FIXME
             # self.write_task_data('current_task', self.current_task)
-            self.task_master()
+            if self.activity.complete:
+                GObject.idle_add(self._task_master.activity.close)
+            else:
+                self.task_master()
 
     def _task_button_cb(self, button):
         ''' The button at the bottom of the page for each task: used to
@@ -682,7 +686,7 @@ class TaskMaster(Gtk.Alignment):
 
             buttons = []
             if tasks_in_section > 1:
-                for i in range(tasks_in_section - 1):
+                for i in range(tasks_in_section):
                     task = self._task_list[section_index]['tasks'][i]
                     tooltip = task.get_name()
                     buttons.append({'label': str(i + 1), 'tooltip': tooltip})
@@ -726,8 +730,8 @@ class TaskMaster(Gtk.Alignment):
                     self._progress_bar.set_button_sensitive(ti, True)
                 else:
                     self._progress_bar.set_button_sensitive(ti, False)
-            # Current task (last task in section has no button)
-            if task_index < tasks_in_section - 1:
+            # Current task
+            if task_index < tasks_in_section:
                 self._progress_bar.set_button_sensitive(task_index, True)
 
         if task_index > 0:

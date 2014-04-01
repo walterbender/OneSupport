@@ -45,7 +45,6 @@ ROLE_UID = 'role'
 
 from taskmaster import TaskMaster
 from graphics import Graphics, FONT_SIZES
-from helppanel import HelpPanel
 import utils
 from power import get_power_manager
 
@@ -97,8 +96,6 @@ class OneSupportActivity(activity.Activity):
 
         self.bundle_path = activity.get_bundle_path()
 
-        self.help_palette = None
-        self.help_panel_visible = False
         self._copy_entry = None
         self._paste_entry = None
         self._webkit = None
@@ -155,12 +152,6 @@ class OneSupportActivity(activity.Activity):
             self._task_master = TaskMaster(self)
             self._task_master.show()
 
-            self._help_panel = HelpPanel(self._task_master)
-            self.help_palette = self._help_button.get_palette()
-            self.help_palette.set_content(self._help_panel)
-            self._help_panel.show()
-            self._help_button.set_sensitive(True)
-
             Gdk.Screen.get_default().connect('size-changed',
                                              self._configure_cb)
             self._toolbox.connect('hide', self._resize_hide_cb)
@@ -175,7 +166,7 @@ class OneSupportActivity(activity.Activity):
         self.set_canvas(self._fixed)
         self._fixed.show()
 
-        self.completed = False
+        self.complete = False
         self._task_master.task_master()
 
     def reset_scrolled_window_adjustments(self):
@@ -242,8 +233,6 @@ class OneSupportActivity(activity.Activity):
                 Gdk.Screen.width(), Gdk.Screen.height() - dy1)
             self._fixed.move(self._progress_area, 0, Gdk.Screen.height() - dy2)
             self._fixed.move(self._button_area, 0, Gdk.Screen.height() - dy1)
-
-        self.help_panel_visible = False
 
     def get_activity_version(self):
         info_path = os.path.join(self.bundle_path, 'activity', 'activity.info')
@@ -351,15 +340,6 @@ class OneSupportActivity(activity.Activity):
         self._paste_button.connect('clicked', self._paste_cb)
         self._paste_button.set_sensitive(False)
 
-        self._help_button = ToolButton('toolbar-help')
-        self._help_button.set_tooltip(_('Help'))
-        self._help_button.props.accelerator = '<Ctrl>H'
-        self._toolbox.toolbar.insert(self._help_button, -1)
-        self._help_button.show()
-        self._help_button.connect('clicked', self._help_cb)
-        self._help_button.set_sensitive(False)
-        self._help_button.palette_invoker.props.lock_palette = True
-
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
@@ -455,33 +435,6 @@ class OneSupportActivity(activity.Activity):
             self.zoom_level /= 1.1
         self._set_zoom_buttons_sensitivity()
         self._task_master.reload_graphics()
-
-    def _help_cb(self, button):
-        # title, help_file = self._task_master.get_help_info()
-        # _logger.debug('%s: %s' % (title, help_file))
-        # if not hasattr(self, 'window_xid'):
-        #    self.window_xid = self.get_window().get_xid()
-        # if title is not None and help_file is not None:
-        #     self.viewhelp = ViewHelp(title, help_file, self.window_xid)
-        #     self.viewhelp.show()
-        try:
-            self._help_panel.set_connected(
-                utils.nm_status() == 'network-wireless-connected')
-        except Exception as e:
-            _logger.error('Could not read NM status: %s' % (e))
-            self._help_panel.set_connected(False)
-
-        if self.help_palette:
-            # FIXME: is_up() is always returning False, so we
-            # "debounce" using help_panel_visible.
-            if not self.help_palette.is_up() and not self.help_panel_visible:
-                self.help_palette.popup(
-                    immediate=True, state=self.help_palette.SECONDARY)
-                self.help_panel_visible = True
-            else:
-                self.help_palette.popdown(immediate=True)
-                self.help_panel_visible = False
-                self._help_button.set_expanded(False)
 
     def _remove_alert_cb(self, alert, response_id):
         self.remove_alert(alert)

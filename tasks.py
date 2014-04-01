@@ -882,7 +882,11 @@ class Support9Task(HTMLTask):
         return True
 
     def _send_report(self, data):
-        send_report(data)
+        try:
+            send_report(data)
+        except Exception as e:
+            _logger.error('send report failed: %s' % e)
+            # FIXME: put up some sort of error page
         self._task_master.activity.reset_cursor()
 
     def get_graphics(self):

@@ -857,15 +857,14 @@ class Support9Task(HTMLTask):
         if school is None:  # Should never happen
             school = ''
 
-        # FIXME: serial number and build
         data = {'subject': 'bug report from One Support',
                 'body': text,
                 'name': name, 
                 'email': email,
                 'school': school,
                 'phone': phone_number,
-                'serial': 'unknown',
-                'build': 'unknown',
+                'serial': utils.get_serial_number(),
+                'build': utils.get_build_number(),
                 'files': []}
 
         self._task_master.activity.busy_cursor()

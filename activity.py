@@ -166,7 +166,6 @@ class OneSupportActivity(activity.Activity):
         self.set_canvas(self._fixed)
         self._fixed.show()
 
-        self.complete = False
         self._task_master.task_master()
 
     def reset_scrolled_window_adjustments(self):

@@ -172,7 +172,7 @@ class TaskMaster(Gtk.Alignment):
         _logger.debug('Running task %d' % (self.current_task))
         self._destroy_graphics()
         self.activity.button_was_pressed = False
-        if not self.completed:
+        if self.current_task < self._get_number_of_tasks():
             section_index, task_index = self.get_section_and_task_index()
 
             # Do we skip this task?
@@ -211,26 +211,19 @@ class TaskMaster(Gtk.Alignment):
             self._graphics.set_zoom_level(0.667)
             self._graphics_grid.attach(self._graphics, 0, 0, 1, 1)
             self._graphics.show()
+
+            # Activity will close after this button is clicked
+            self.completed = True
             self.task_button.set_label(_('Exit'))
-            self.activity.complete = True
 
     def enter_entered(self, task_data, uid):
         ''' Enter was entered in a text entry '''
-        if not 'completed' in task_data or not task_data['completed']:
-            task_data = self.read_task_data(uid)
-            task_data['end_time'] = int(time.time() + 0.5)
-            task_data['completed'] = True
-            self._update_accumutaled_time(task_data)
-        # FIXME
-        # self.write_task_data(uid, task_data)
         self.button_was_pressed = True
         section_index, task_index = self.get_section_and_task_index()
         task = self._task_list[section_index]['tasks'][task_index]
         if task.after_button_press():
             self.current_task += 1
-            # FIXME
-            # self.write_task_data('current_task', self.current_task)
-            if self.activity.complete:
+            if self.completed:
                 GObject.idle_add(self._task_master.activity.close)
             else:
                 self.task_master()
@@ -316,91 +309,27 @@ class TaskMaster(Gtk.Alignment):
         task = self._task_list[section_index]['tasks'][task_index]
         if self._first_time:
             self._uid = task.uid
-            '''
-            title, help_file = task.get_help_info()
-            if title is None or help_file is None:
-                self.activity._help_button.set_sensitive(False)
-            else:
-                self.activity._help_button.set_sensitive(True)
-            '''
             self._load_graphics()
-
-            self._task_data = self.read_task_data(self._uid)
-            if self._task_data is None:
-                self._init_task_data(task)
-            elif 'completed' in self._task_data and \
-                 self._task_data['completed']:
-                _logger.debug('Revisiting a completed task')
-
+            self._task_data = None
             self._first_time = False
 
         GObject.timeout_add(task.get_pause_time(), self._test, task.test,
                             self._task_data, self._uid)
 
-    def _init_task_data(self, task):
-        # In order to calculate accumulated time, we need to monitor
-        # our start time.
-        self._start_time = time.time()
-        self._accumulated_time = 0
-
-        self._task_data = {}
-        self._task_data['start_time'] = int(self._start_time + 0.5)
-        self._task_data['accumulated_time'] = 0
-        self._task_data['completed'] = False
-        self._task_data['task'] = task.get_name()
-        self._task_data['data'] = task.get_data()
-        self._task_data['collectable'] = task.is_collectable()
-        # FIXME
-        # self.write_task_data(self._uid, self._task_data)
-
-    def _update_accumutaled_time(self, task_data):
-        end_time = time.time()
-        self._accumulated_time += end_time - self._start_time
-        task_data['accumulated_time'] += int(self._accumulated_time + 0.5)
-        self._start_time = end_time
-
     def _test(self, test, task_data, uid):
         ''' Is the task complete? '''
-        # We may have gotten here by jumping, so task_data may be None
-        if task_data is None:        
-            task_data = self.read_task_data(uid)
-            if task_data is None:
-                task = self.uid_to_task(uid)
-                self._init_task_data(task)
-                task_data = self._task_data
 
         if test(task_data):
-            if not 'completed' in task_data or not task_data['completed']:
-                task_data['end_time'] = int(time.time() + 0.5)
-                task_data['completed'] = True
-                self._update_accumutaled_time(task_data)
-            # FIXME
-            # self.write_task_data(uid, task_data)
             if self.task_button is not None:
                 self.task_button.set_sensitive(True)
         else:
             if self.task_button is not None:
                 self.task_button.set_sensitive(False)
-            if not 'completed' in task_data or not task_data['completed']:
-                self._update_accumutaled_time(task_data)
-            # Don't save data at each test
-            # self.write_task_data(uid, task_data)
             section_index, task_index = self.get_section_and_task_index()
             self._run_task(section_index, task_index)
 
-    '''
-    def write_current_task_data(self):
-        if self._uid is not None:
-            # FIXME
-            self.write_task_data(self._uid, self._task_data)
-    '''
-
     def _jump_to_task_cb(self, widget, flag):
         ''' Jump to task associated with uid '''
-        # First, make sure current task data is saved.
-        # FIXME
-        # self.write_current_task_data()
-
         section_index, task_index = self.get_section_and_task_index()
         task = self._task_list[section_index]['tasks'][task_index]
 
@@ -525,25 +454,6 @@ class TaskMaster(Gtk.Alignment):
 
     def get_section_name(self, section_index):
         return self._task_list[section_index]['name']
-
-    def get_section_icon(self, section_index):
-        return self._task_list[section_index]['icon']
-
-    def get_completed_sections(self):
-        progress = []
-        for section_index, section in enumerate(self._task_list):
-            section_completed = True
-            if self._get_number_of_collectables_in_section(section_index) == 0:
-                for task in section['tasks']:
-                    if self.read_task_data(task.uid) is None:
-                        section_completed = False
-            else:
-                for task in section['tasks']:
-                    if task.is_collectable() and not task.is_completed():
-                        section_completed = False
-            if section_completed:
-                progress.append(section_index)
-        return progress
 
     def section_and_task_to_uid(self, section_index, task_index=0):
         section = self._task_list[section_index]

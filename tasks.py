@@ -820,7 +820,6 @@ class Support9Task(HTMLTask):
         return True
 
     def after_button_press(self):
-        # FIX ME: Report the bug here
         text_buffer = self._entry.get_buffer()
         bounds = text_buffer.get_bounds()
         text = text_buffer.get_text(bounds[0], bounds[1], True)
@@ -838,7 +837,7 @@ class Support9Task(HTMLTask):
         if school is None:  # Should never happen
             school = ''
 
-        # FIXME
+        # FIXME: serial number and build
         data = {'subject': 'bug report from One Support',
                 'body': text,
                 'name': name, 
@@ -850,12 +849,11 @@ class Support9Task(HTMLTask):
                 'files': []}
 
         self._task_master.activity.busy_cursor()
-        GObject.idle_add(_send_report, data)
+        GObject.idle_add(self._send_report, data)
+        return True
 
     def _send_report(self, data):
-        _logger.debug('sending report')
-        self._send_report(data)
-        return True
+        send_report(data)
 
     def get_graphics(self):
         url = os.path.join(self._task_master.get_bundle_path(), 'html-content',

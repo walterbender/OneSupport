@@ -10,6 +10,7 @@
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
 import os
+import logging
 from tempfile import NamedTemporaryFile
 
 from backend.logcollect import LogCollect
@@ -55,10 +56,13 @@ def send_report(data):
 
     helper = FieldHelper()
     fields = []
-    fields.append(helper.get_field(data['school'], 2))
-    fields.append(helper.get_field(data['phone'], 4))
-    fields.append(helper.get_field(data['serial'], 5))
-    fields.append(helper.get_field(data['build'], 6))
+    try:
+        fields.append(helper.get_field(2, data['school']))
+        fields.append(helper.get_field(4, data['phone']))
+        fields.append(helper.get_field(5, data['serial']))
+        fields.append(helper.get_field(6, data['build']))
+    except Exception as error:
+        logging.error('report.send_report missing ids: %s', str(error))
 
     ticket = Ticket()
     ticket.create(data['subject'],

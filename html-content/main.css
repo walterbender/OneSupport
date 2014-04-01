@@ -1,0 +1,51 @@
+@charset "utf-8";
+
+@font-face { 
+ font-family: abc123; 
+ src: url(/fonts/abc123.ttf); 
+} 
+p { 
+ font-family: abc123; 
+ 
+} 
+
+a:link {color:#000000; font-weight: bold; text-decoration:none;}
+a:visited {color:#000000; font-weight: bold; text-decoration:none;}
+a:hover {color:#000000; font-weight: bold; text-decoration:underline;}
+a:active {color:#000000; font-weight: bold; text-decoration:none;}
+
+.titlecontent {
+	font-family: abc123;
+	font-size: 36px;
+	font-style: normal;
+	font-weight: normal;
+	line-height: 60px;
+	color: #000000;
+	text-align: center;
+	height: auto;
+	width: 1600px;
+	margin-right: auto;
+	margin-left: auto;
+}
+.heading {
+	font-family: abc123-bold;
+	font-size: 48px;
+	font-style: normal;
+	font-weight: normal;
+}
+.content {
+	font-family: abc123;
+	font-size: 36px;
+	font-style: normal;
+	font-weight: normal;
+	line-height: 60px;
+	color: #000000;
+	text-align: left;
+	height: auto;
+	width: 1600px;
+	margin-right: auto;
+	margin-left: auto;
+}
+img {
+        vertical-align: middle;
+}   

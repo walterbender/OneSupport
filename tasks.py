@@ -205,8 +205,28 @@ class Support1Task(HTMLTask):
         HTMLTask.__init__(self, task_master)
         self._name = _('Support')
         self.uid = 'support-1-task'
-        self._uri = 'support1.html'
+        self._uri = ['support1.html', 'support1a.html']
         self._prompt = _("Let's go!")
+
+    def get_graphics(self):
+        name = self._task_master.read_task_data(NAME_UID)
+        email = self._task_master.read_task_data(EMAIL_UID)
+        phone_number = self._task_master.read_task_data(PHONE_NUMBER_UID)
+        school = self._task_master.read_task_data(SCHOOL_NAME)
+
+        if name is None or email is None or phone_number is None or \
+           school is None:
+            url = os.path.join(self._task_master.get_bundle_path(),
+                               'html-content', self._uri[0])
+        else:
+            url = os.path.join(self._task_master.get_bundle_path(),
+                               'html-content', self._uri[1])
+
+        graphics = Graphics()
+        graphics.add_uri('file://' + url, height=self._height)
+        graphics.set_zoom_level(self._zoom_level)
+
+        return graphics, self._prompt
 
 
 class Support2Task(Task):
@@ -752,7 +772,7 @@ class Support8Task(HTMLTask):
 
     def __init__(self, task_master):
         HTMLTask.__init__(self, task_master)
-        self._name = _('Support')
+        self._name = _('Confirmation')
         self.uid = 'support-8-task'
         self._uri = 'support8.html'
 

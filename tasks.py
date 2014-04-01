@@ -824,9 +824,9 @@ class Support9Task(HTMLTask):
         HTMLTask.__init__(self, task_master)
         self._name = _('Enter Your Bug Report')
         self.uid = _ENTER_BUG_REPORT_TASK
-        self._uri = 'support9.html'
+        self._uri = ['support9a.html', 'support9b.html']
         self._entry = None
-        self._height = 200
+        self._height = 60
         self._task_data = None
         self._prompt = _('Submit')
 
@@ -890,16 +890,20 @@ class Support9Task(HTMLTask):
         self._task_master.activity.reset_cursor()
 
     def get_graphics(self):
-        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
-                           self._uri)
-
         graphics = Graphics()
+        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
+                           self._uri[0])
         graphics.add_uri('file://' + url, height=self._height)
         graphics.set_zoom_level(self._zoom_level)
-        self._entry = graphics.add_text_view()
 
+        self._entry = graphics.add_text_view()
         self._task_master.activity.set_copy_widget(text_entry=self._entry)
         self._task_master.activity.set_paste_widget(text_entry=self._entry)
+
+        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
+                           self._uri[1])
+        graphics.add_uri('file://' + url, height=self._height)
+        graphics.set_zoom_level(self._zoom_level)
 
         return graphics, self._prompt
 

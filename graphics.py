@@ -192,7 +192,7 @@ class Graphics(Gtk.Alignment):
     def add_text_view(self, text=''):
         scrolled_window = Gtk.ScrolledWindow()
         scrolled_window.set_size_request(style.GRID_CELL_SIZE * 8,
-                                         style.GRID_CELL_SIZE * 6)
+                                         style.GRID_CELL_SIZE * 3)
         scrolled_window.set_policy(Gtk.PolicyType.NEVER,
                                    Gtk.PolicyType.AUTOMATIC)
         scrolled_window.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
@@ -296,6 +296,24 @@ class Graphics(Gtk.Alignment):
         self._attach_center(grid)
         grid.show()
         return [yesbutton, nobutton]
+
+    def add_button_and_label(self, button_name=_('upload attachment'),
+                             label_text=''):
+        grid = Gtk.Grid()
+        grid.set_row_spacing(style.DEFAULT_SPACING)
+        grid.set_column_spacing(style.DEFAULT_SPACING)
+        grid.set_border_width(style.DEFAULT_SPACING * 2)
+        grid.set_column_homogeneous(True)
+        button = Gtk.Button()
+        button.set_label(button_name)
+        label = Gtk.Label(label_text)
+        grid.attach(button, 0, 0, 1, 1)
+        button.show()
+        grid.attach(label, 1, 0, 1, 1)
+        label.show()
+        self._attach_center(grid)
+        grid.show()
+        return [button, label]
 
     def add_radio_buttons(self, button_icons, colors=None):
         # Psuedo-radio buttons

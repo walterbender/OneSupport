@@ -17,6 +17,9 @@ from gettext import gettext as _
 
 from gi.repository import GObject
 from gi.repository import Gdk
+from gi.repository import Gtk
+
+from sugar3.graphics.objectchooser import ObjectChooser
 
 import logging
 _logger = logging.getLogger('training-activity-tasks')
@@ -32,8 +35,7 @@ _ENTER_NAME_TASK = 'enter-name-task'
 _ENTER_EMAIL_TASK = 'enter-email-task'
 _ENTER_SCHOOL_TASK = 'enter-school-task'
 _ENTER_BUG_REPORT_TASK = 'enter-bug-report-task'
-_CONFIRMATION_TASK = 'support-8-task'
-
+_CONFIRMATION_TASK = 'confirmation-task'
 
 def get_tasks(task_master):
     task_list = [
@@ -670,6 +672,10 @@ class Support9Task(HTMLTask):
         self._entry = None
         self._height = 60
         self._prompt = _('Submit')
+        self._buttons = []
+        self._labels = []
+        self._files = []
+        self._mimetypes = []
 
     def get_requires(self):
         return [_CONFIRMATION_TASK]
@@ -706,6 +712,13 @@ class Support9Task(HTMLTask):
         if school is None:  # Should never happen
             school = ''
 
+        files = []
+        for i in range(len(self._files)):
+            if self._files[i] is not None:
+                files.append({'name': self._labels[i],
+                              'type': self._mimetypes[i],
+                              'path': self._files[i]})
+
         data = {'subject': 'bug report from One Support',
                 'body': text,
                 'name': name,
@@ -714,7 +727,7 @@ class Support9Task(HTMLTask):
                 'phone': phone_number,
                 'serial': utils.get_serial_number(),
                 'build': utils.get_build_number(),
-                'files': []}
+                'files': files}
 
         self._task_master.activity.busy_cursor()
         GObject.idle_add(self._send_report, data)
@@ -728,6 +741,25 @@ class Support9Task(HTMLTask):
             # FIXME: put up some sort of error page
         self._task_master.activity.reset_cursor()
 
+    def _upload_cb(self, widget, i):
+        chooser = None
+        dsobject = None
+        name = None
+        chooser = ObjectChooser(parent=self._task_master.activity)
+        if chooser is not None:
+            result = chooser.run()
+            if result == Gtk.ResponseType.ACCEPT:
+                dsobject = chooser.get_selected_object()
+                if dsobject and dsobject.file_path:
+                    name = dsobject.metadata['title']
+            chooser.destroy()
+            del chooser
+        if name is not None:
+            span = 'size="large"'
+            self._labels[i].set_markup('<span %s>%s</span>' % (span, name))
+            self._files[i] = dsobject.file_path
+            self._mimetypes[i] = dsobject.metadata['mime_type']
+
     def get_graphics(self):
         graphics = Graphics()
         url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
@@ -738,6 +770,15 @@ class Support9Task(HTMLTask):
         self._entry = graphics.add_text_view()
         self._task_master.activity.set_copy_widget(text_entry=self._entry)
         self._task_master.activity.set_paste_widget(text_entry=self._entry)
+
+        for i in range(3):
+            button, label = graphics.add_button_and_label()
+            button.connect('clicked', self._upload_cb, i)
+            label.set_use_markup(True)
+            self._buttons.append(button)
+            self._labels.append(label)
+            self._files.append(None)
+            self._mimetypes.append(None)
 
         url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
                            self._uri[1])

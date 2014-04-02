@@ -30,8 +30,6 @@ from reporter import send_report
 # These tasks are requirements for other tasks
 _ENTER_NAME_TASK = 'enter-name-task'
 _ENTER_EMAIL_TASK = 'enter-email-task'
-_VALIDATE_EMAIL_TASK = 'validate-email-task'
-_ENTER_PHONE_NUMBER_TASK = 'enter-phone-number-task'
 _ENTER_SCHOOL_TASK = 'enter-school-task'
 _ENTER_BUG_REPORT_TASK = 'enter-bug-report-task'
 
@@ -44,8 +42,6 @@ def get_tasks(task_master):
                    Support2Task(task_master),
                    Support3Task(task_master),
                    Support4Task(task_master),
-                   Support5Task(task_master),
-                   Support6Task(task_master),
                    Support7Task(task_master),
                    Support8Task(task_master),
                    Support9Task(task_master)]},
@@ -326,22 +322,22 @@ class Support4Task(HTMLTask):
         HTMLTask.__init__(self, task_master)
         self._name = _('Enter Your Email')
         self.uid = _ENTER_EMAIL_TASK
-        self._uri = 'support4.html'
-        self._entry = None
-        self._height = 400
+        self._uri = ['support4a.html', 'support4b.html']
+        self._entry = [None, None]
+        self._height = 60
 
     def get_requires(self):
         return [_ENTER_NAME_TASK]
 
     def _enter_entered(self, widget):
-        if self._is_valid_email_entry():
+        if self._is_valid_email_entry() and self._is_valid_phone_entry():
             self._task_master.enter_entered()
 
     def test(self):
-        return self._is_valid_email_entry()
+        return self._is_valid_email_entry() and self._is_valid_phone_entry()
 
     def _is_valid_email_entry(self):
-        entry = self._entry.get_text()
+        entry = self._entry[0].get_text()
         if len(entry) == 0:
             return False
         realname, email_address = email.utils.parseaddr(entry)
@@ -351,128 +347,8 @@ class Support4Task(HTMLTask):
             return False
         return True
 
-    def after_button_press(self):
-        _logger.debug('Writing email address: %s' % self._entry.get_text())
-        self._task_master.write_task_data(EMAIL_UID, self._entry.get_text())
-        return True
-
-    def get_graphics(self):
-        email_address = self._task_master.read_task_data(EMAIL_UID)
-        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
-                           self._uri)
-
-        graphics = Graphics()
-        graphics.add_uri('file://' + url, height=self._height)
-        graphics.set_zoom_level(self._zoom_level)
-        if email_address is not None:
-            self._entry = graphics.add_entry(text=email_address)
-        else:
-            self._entry = graphics.add_entry()
-
-        self._entry.connect('activate', self._enter_entered)
-        self._task_master.activity.set_copy_widget(text_entry=self._entry)
-        self._task_master.activity.set_paste_widget(text_entry=self._entry)
-
-        return graphics, self._prompt
-
-    def grab_focus(self):
-        self._entry.set_can_focus(True)
-        self._entry.grab_focus()
-
-
-class Support5Task(HTMLTask):
-
-    def __init__(self, task_master):
-        HTMLTask.__init__(self, task_master)
-        self._name = _('Validate Email')
-        self.uid = _VALIDATE_EMAIL_TASK
-        self._uri = 'support5.html'
-        self._entries = []
-
-    def get_requires(self):
-        return [_ENTER_EMAIL_TASK]
-
-    def _enter_entered(self, widget):
-        if self._is_valid_email_entry():
-            self._task_master.enter_entered()
-
-    def test(self):
-        return self._is_valid_email_entry()
-
-    def _is_valid_email_entry(self):
-        entry0 = self._entries[0].get_text()
-        entry1 = self._entries[1].get_text()
-        if len(entry0) == 0 or len(entry1) == 0:
-            return False
-        if entry0.lower() != entry1.lower():
-            return False
-        realname, email_address = email.utils.parseaddr(entry0)
-        if email_address == '':
-            return False
-        if not re.match(r'[^@]+@[^@]+\.[^@]+', email_address):
-            return False
-        return True
-
-    def after_button_press(self):
-        self._task_master.write_task_data(EMAIL_UID,
-                                          self._entries[1].get_text())
-        return True
-
-    def get_graphics(self):
-        self._entries = []
-        email_address = self._task_master.read_task_data(EMAIL_UID)
-        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
-                           self._uri)
-
-        graphics = Graphics()
-        if email_address is None:
-            # This should not happen except if gconf is corrupted
-            self._entries.append(graphics.add_entry(text=''))
-            _logger.error('email was missing in Task %s' % self.uid)
-        else:
-            self._entries.append(graphics.add_entry(text=email_address))
-        graphics.add_uri('file://' + url, height=400)
-        graphics.set_zoom_level(self._zoom_level)
-        if email_address is None:  # Should never happen
-            email_address = ''
-        self._entries.append(graphics.add_entry())
-
-        self._entries[0].connect('activate', self._enter_entered)
-        self._entries[1].connect('activate', self._enter_entered)
-        # Paste to second entry
-        self._task_master.activity.set_copy_widget(text_entry=self._entries[0])
-        self._task_master.activity.set_paste_widget(
-            text_entry=self._entries[-1])
-
-        return graphics, self._prompt
-
-    def grab_focus(self):
-        self._entries[-1].set_can_focus(True)
-        self._entries[-1].grab_focus()
-
-
-class Support6Task(HTMLTask):
-
-    def __init__(self, task_master):
-        HTMLTask.__init__(self, task_master)
-        self._name = _('Enter Your Phone Number')
-        self.uid = _ENTER_PHONE_NUMBER_TASK
-        self._uri = 'support6.html'
-        self._entry = None
-        self._height = 400
-
-    def get_requires(self):
-        return [_VALIDATE_EMAIL_TASK]
-
-    def _enter_entered(self, widget):
-        if self._is_valid_phone_entry():
-            self._task_master.enter_entered()
-
-    def test(self):
-        return self._is_valid_phone_entry()
-
     def _is_valid_phone_entry(self):
-        entry = self._entry.get_text()
+        entry = self._entry[1].get_text()
         if len(entry) == 0:
             return False
         return self._valid_number(entry)
@@ -486,33 +362,45 @@ class Support6Task(HTMLTask):
         return pattern.match(phone_number) is not None
 
     def after_button_press(self):
+        _logger.debug('Writing email address: %s' % self._entry[0].get_text())
+        self._task_master.write_task_data(EMAIL_UID, self._entry[0].get_text())
         _logger.debug('Writing phone number: %s' % self._entry.get_text())
         self._task_master.write_task_data(PHONE_NUMBER_UID,
                                           self._entry.get_text())
         return True
 
     def get_graphics(self):
-        phone_number = self._task_master.read_task_data(PHONE_NUMBER_UID)
-        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
-                           self._uri)
-
         graphics = Graphics()
+
+        email_address = self._task_master.read_task_data(EMAIL_UID)
+        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
+                           self._uri[0])
         graphics.add_uri('file://' + url, height=self._height)
         graphics.set_zoom_level(self._zoom_level)
-        if phone_number is not None:
-            self._entry = graphics.add_entry(text=phone_number)
+        if email_address is not None:
+            self._entry[0] = graphics.add_entry(text=email_address)
         else:
-            self._entry = graphics.add_entry()
+            self._entry[0] = graphics.add_entry()
 
-        self._entry.connect('activate', self._enter_entered)
-        self._task_master.activity.set_copy_widget(text_entry=self._entry)
-        self._task_master.activity.set_paste_widget(text_entry=self._entry)
+        self._entry[0].connect('activate', self._enter_entered)
+
+        phone_number = self._task_master.read_task_data(PHONE_NUMBER_UID)
+        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
+                           self._uri[1])
+        graphics.add_uri('file://' + url, height=self._height)
+        graphics.set_zoom_level(self._zoom_level)
+
+        if phone_number is not None:
+            self._entry[1] = graphics.add_entry(text=phone_number)
+        else:
+            self._entry[1] = graphics.add_entry()
 
         return graphics, self._prompt
 
     def grab_focus(self):
-        self._entry.set_can_focus(True)
-        self._entry.grab_focus()
+        self._entry[0].set_can_focus(True)
+        self._entry[0].grab_focus()
+        self._entry[1].set_can_focus(True)
 
 
 class Support7Task(HTMLTask):
@@ -757,8 +645,7 @@ class Support8Task(HTMLTask):
         self._uri = 'support8.html'
 
     def get_requires(self):
-        return [_ENTER_NAME_TASK, _VALIDATE_EMAIL_TASK, _ENTER_SCHOOL_TASK,
-                _ENTER_PHONE_NUMBER_TASK]
+        return [_ENTER_NAME_TASK, _ENTER_SCHOOL_TASK,_ENTER_EMAIL_TASK]
 
     def get_graphics(self):
         self._entries = []

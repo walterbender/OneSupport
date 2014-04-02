@@ -29,6 +29,7 @@ from activity import (NAME_UID, EMAIL_UID, SCHOOL_UID, SCHOOL_NAME,
 from graphics import Graphics, FONT_SIZES
 import utils
 from reporter import send_report
+from backend.zendesk import ConfigError, NetworkError, ServerError
 
 # These tasks are requirements for other tasks
 _ENTER_NAME_TASK = 'enter-name-task'
@@ -746,10 +747,15 @@ class Support7Task(HTMLTask):
             send_report(data)
             # If we are successful, don't save the error report locally.
             self._task_master.write_task_data(ERROR_REPORT, '')
-        except Exception as e:
+        except ServerError as e:
             _logger.error('send report failed: %s' % e)
-            # FIXME: put up some sort of error page
             self._task_master.show_page('server-error.html')
+        except NetworkError as e:
+            _logger.error('send report failed: %s' % e)
+            self._task_master.show_page('network-error.html')
+        except ConfigError as e:
+            _logger.error('send report failed: %s' % e)
+            self._task_master.show_page('config-error.html')
         self._task_master.activity.reset_cursor()
 
     def _upload_cb(self, widget, i):

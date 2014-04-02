@@ -348,9 +348,9 @@ class Support4Task(HTMLTask):
     def after_button_press(self):
         _logger.debug('Writing email address: %s' % self._entry[0].get_text())
         self._task_master.write_task_data(EMAIL_UID, self._entry[0].get_text())
-        _logger.debug('Writing phone number: %s' % self._entry.get_text())
+        _logger.debug('Writing phone number: %s' % self._entry[1].get_text())
         self._task_master.write_task_data(PHONE_NUMBER_UID,
-                                          self._entry.get_text())
+                                          self._entry[1].get_text())
         return True
 
     def get_graphics(self):

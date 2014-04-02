@@ -737,8 +737,8 @@ class Support7Task(HTMLTask):
                 'build': utils.get_build_number(),
                 'files': files}
 
-        self._task_master.activity.busy_cursor()
         self._task_master.show_page('progress.html')
+        self._task_master.activity.busy_cursor()
         GObject.idle_add(self._send_report, data)
         return True
 

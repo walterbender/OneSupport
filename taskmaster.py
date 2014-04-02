@@ -200,6 +200,7 @@ class TaskMaster(Gtk.Alignment):
                     _logger.error('Breaking out of required task loop.')
 
             self._first_time = True
+            self.completed = False
             self._run_task(section_index, task_index)
         else:
             self.show_page('completed.html')
@@ -246,11 +247,13 @@ class TaskMaster(Gtk.Alignment):
                 self.update_completion_percentage()
                 self.jump_to_task_cb(None, 'no')
             else:
-                self.current_task += 1
                 if self.completed:
                     GObject.idle_add(self.activity.close)
                 else:
-                    self.task_master()
+                    _logger.debug('in task_button_cb... incrementing task')
+                    self.current_task += 1
+                    GObject.idle_add(self.task_master)
+                    # self.task_master()
 
     def _my_turn_button_cb(self, button):
         ''' Take me to the Home Page and select favorites view. '''
@@ -534,8 +537,7 @@ class TaskMaster(Gtk.Alignment):
         return False
 
     def _progress_button_cb(self, button, i):
-        section_index, task_index = self.get_section_and_task_index()
-        self.current_task += (i - task_index)
+        self.current_task = i
         self.task_master()
 
     def _update_progress(self):

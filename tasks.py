@@ -32,6 +32,7 @@ _ENTER_NAME_TASK = 'enter-name-task'
 _ENTER_EMAIL_TASK = 'enter-email-task'
 _ENTER_SCHOOL_TASK = 'enter-school-task'
 _ENTER_BUG_REPORT_TASK = 'enter-bug-report-task'
+_CONFIRMATION_TASK = 'support-8-task'
 
 
 def get_tasks(task_master):
@@ -199,28 +200,8 @@ class Support1Task(HTMLTask):
         HTMLTask.__init__(self, task_master)
         self._name = _('Support')
         self.uid = 'support-1-task'
-        self._uri = ['support1.html', 'support1a.html']
+        self._uri = 'support1.html'
         self._prompt = _("Let's go!")
-
-    def get_graphics(self):
-        name = self._task_master.read_task_data(NAME_UID)
-        email_address = self._task_master.read_task_data(EMAIL_UID)
-        phone_number = self._task_master.read_task_data(PHONE_NUMBER_UID)
-        school = self._task_master.read_task_data(SCHOOL_NAME)
-
-        if name is None or email_address is None or phone_number is None or \
-           school is None:
-            url = os.path.join(self._task_master.get_bundle_path(),
-                               'html-content', self._uri[0])
-        else:
-            url = os.path.join(self._task_master.get_bundle_path(),
-                               'html-content', self._uri[1])
-
-        graphics = Graphics()
-        graphics.add_uri('file://' + url, height=self._height)
-        graphics.set_zoom_level(self._zoom_level)
-
-        return graphics, self._prompt
 
 
 class Support2Task(Task):
@@ -641,7 +622,7 @@ class Support8Task(HTMLTask):
     def __init__(self, task_master):
         HTMLTask.__init__(self, task_master)
         self._name = _('Confirmation')
-        self.uid = 'support-8-task'
+        self.uid = _CONFIRMATION_TASK
         self._uri = 'support8.html'
 
     def get_requires(self):
@@ -691,7 +672,7 @@ class Support9Task(HTMLTask):
         self._prompt = _('Submit')
 
     def get_requires(self):
-        return [_VALIDATE_EMAIL_TASK]
+        return [_CONFIRMATION_TASK]
 
     def test(self):
         return self._is_valid_bug_report_entry()

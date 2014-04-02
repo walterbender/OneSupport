@@ -27,7 +27,7 @@ import tasks
 from progressbar import ProgressBar
 import utils
 from graphics import Graphics
-from activity import (NAME_UID, EMAIL_UID)
+from activity import (NAME_UID, EMAIL_UID, SCHOOL_NAME, PHONE_NUMBER_UID)
 
 
 class TaskMaster(Gtk.Alignment):
@@ -57,14 +57,23 @@ class TaskMaster(Gtk.Alignment):
         self._email = None
         self._graphics = None
         self._first_time = True
-        self._yes_task = None
-        self._no_task = None
+        self.yes_task = None
+        self.no_task = None
         self._task_list = tasks.get_tasks(self)
         self._uid = None
 
         self._assign_required()
 
-        self.current_task = 0
+        name = self.read_task_data(NAME_UID)
+        email_address = self.read_task_data(EMAIL_UID)
+        phone_number = self.read_task_data(PHONE_NUMBER_UID)
+        school = self.read_task_data(SCHOOL_NAME)
+
+        if name is None or email_address is None or phone_number is None or \
+           school is None:
+            self.current_task = 0
+        else:
+            self.current_task = 5
 
         self._graphics_grid = Gtk.Grid()
         self._graphics_grid.set_row_spacing(style.DEFAULT_SPACING)
@@ -101,7 +110,7 @@ class TaskMaster(Gtk.Alignment):
         yes_next_no_grid.set_column_homogeneous(True)
 
         self._yes_button = Gtk.Button(_('Yes'), name='next-button')
-        self._yes_button.connect('clicked', self._jump_to_task_cb, 'yes')
+        self._yes_button.connect('clicked', self.jump_to_task_cb, 'yes')
         yes_next_no_grid.attach(self._yes_button, 0, 0, 1, 1)
         self._yes_button.hide()
 
@@ -111,7 +120,7 @@ class TaskMaster(Gtk.Alignment):
         self.task_button.show()
 
         self._no_button = Gtk.Button(_('No'), name='next-button')
-        self._no_button.connect('clicked', self._jump_to_task_cb, 'no')
+        self._no_button.connect('clicked', self.jump_to_task_cb, 'no')
         yes_next_no_grid.attach(self._no_button, 2, 0, 1, 1)
         self._no_button.hide()
 
@@ -226,12 +235,12 @@ class TaskMaster(Gtk.Alignment):
         section_index, task_index = self.get_section_and_task_index()
         task = self._task_list[section_index]['tasks'][task_index]
         if task.after_button_press():
-            if self._yes_task is not None:
+            if self.yes_task is not None:
                 self.update_completion_percentage()
-                self._jump_to_task_cb(None, 'yes')
-            elif self._no_task is not None:
+                self.jump_to_task_cb(None, 'yes')
+            elif self.no_task is not None:
                 self.update_completion_percentage()
-                self._jump_to_task_cb(None, 'no')
+                self.jump_to_task_cb(None, 'no')
             else:
                 self.current_task += 1
                 if self.completed:
@@ -260,7 +269,6 @@ class TaskMaster(Gtk.Alignment):
 
         task = self._task_list[section_index]['tasks'][0]
         self.current_task = self.uid_to_task_number(task.uid)
-        self.activity.progress_buttons[section_index].set_active(True)
         self.task_master()
 
     def _refresh_button_cb(self, button):
@@ -309,7 +317,7 @@ class TaskMaster(Gtk.Alignment):
             section_index, task_index = self.get_section_and_task_index()
             self._run_task(section_index, task_index)
 
-    def _jump_to_task_cb(self, widget, flag):
+    def jump_to_task_cb(self, widget, flag):
         ''' Jump to task associated with uid '''
         section_index, task_index = self.get_section_and_task_index()
         task = self._task_list[section_index]['tasks'][task_index]
@@ -318,12 +326,11 @@ class TaskMaster(Gtk.Alignment):
         task.after_button_press()
 
         if flag == 'yes':
-            uid = self._yes_task
+            uid = self.yes_task
         else:
-            uid = self._no_task
+            uid = self.no_task
         self.current_task = self.uid_to_task_number(uid)
 
-        self.activity.progress_buttons[section_index].set_active(True)
         self.task_master()
 
     def _assign_required(self):
@@ -351,8 +358,6 @@ class TaskMaster(Gtk.Alignment):
                     self.current_task = self.uid_to_task_number(uid)
                     section_index, task_index = \
                         self.get_section_and_task_index()
-                    self.activity.progress_buttons[section_index].set_active(
-                        True)
                 return False
         return True
 
@@ -391,8 +396,8 @@ class TaskMaster(Gtk.Alignment):
         self._graphics_grid.attach(self._graphics, 0, 0, 1, 1)
         self._graphics.show()
 
-        self._yes_task, self._no_task = task.get_yes_no_tasks()
-        if self._yes_task is not None and self._no_task is not None:
+        self.yes_task, self.no_task = task.get_yes_no_tasks()
+        if self.yes_task is not None and self.no_task is not None:
             self.task_button.hide()
             self._yes_button.show()
             self._no_button.show()

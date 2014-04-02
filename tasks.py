@@ -683,6 +683,7 @@ class Support7Task(HTMLTask):
         self._labels = []
         self._files = []
         self._mimetypes = []
+        self._in_progress = False
 
     def get_requires(self):
         return [CONFIRMATION_TASK]
@@ -701,6 +702,12 @@ class Support7Task(HTMLTask):
     def after_button_press(self):
         if self._task_master.completed:
             return True
+
+        # So we don't try to send more than once...
+        if self._in_progress:
+            return False
+        else:
+            self._in_progress = True
 
         text_buffer = self._entry.get_buffer()
         bounds = text_buffer.get_bounds()
@@ -739,23 +746,35 @@ class Support7Task(HTMLTask):
 
         self._task_master.show_page('progress.html')
         self._task_master.activity.busy_cursor()
-        GObject.idle_add(self._send_report, data)
-        return True
+
+        # A timeout seems to be needed for the progress page to appear.
+        # GObject.idle_add(self._send_report, data)
+        GObject.timeout_add(2000, self._send_report, data)
+        return False
 
     def _send_report(self, data):
         try:
             send_report(data)
             # If we are successful, don't save the error report locally.
             self._task_master.write_task_data(ERROR_REPORT, '')
+            self._task_master.show_page('completed.html')
+            self._task_master.task_button.set_label(_('Exit'))
+            self._task_master.completed = True
         except ServerError as e:
             _logger.error('send report failed: %s' % e)
             self._task_master.show_page('server-error.html')
+            self._task_master.task_button.set_label(_('Exit'))
+            self._task_master.completed = True
         except NetworkError as e:
             _logger.error('send report failed: %s' % e)
             self._task_master.show_page('network-error.html')
+            self._task_master.task_button.set_label(_('Exit'))
+            self._task_master.completed = True
         except ConfigError as e:
             _logger.error('send report failed: %s' % e)
             self._task_master.show_page('config-error.html')
+            self._task_master.task_button.set_label(_('Exit'))
+            self._task_master.completed = True
         self._task_master.activity.reset_cursor()
 
     def _upload_cb(self, widget, i):
@@ -778,6 +797,8 @@ class Support7Task(HTMLTask):
             self._mimetypes[i] = dsobject.metadata['mime_type']
 
     def get_graphics(self):
+        self._in_progress = False
+
         graphics = Graphics()
         url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
                            self._uri[0])

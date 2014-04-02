@@ -45,9 +45,9 @@ def get_tasks(task_master):
                    Support2Task(task_master),
                    Support3Task(task_master),
                    Support4Task(task_master),
-                   Support7Task(task_master),
-                   Support8Task(task_master),
-                   Support9Task(task_master)]},
+                   Support5Task(task_master),
+                   Support6Task(task_master),
+                   Support7Task(task_master)]},
     ]
     return task_list
 
@@ -386,14 +386,14 @@ class Support4Task(HTMLTask):
         self._entry[1].set_can_focus(True)
 
 
-class Support7Task(HTMLTask):
+class Support5Task(HTMLTask):
 
     def __init__(self, task_master):
         HTMLTask.__init__(self, task_master)
         self._name = _('Enter School Name')
         self.uid = _ENTER_SCHOOL_TASK
-        self._uri = ['support7a.html',
-                     'support7b.html']
+        self._uri = ['support5a.html',
+                     'support5b.html']
         self._height = 60
         self._graphics = None
         self._school_entry = None
@@ -619,13 +619,13 @@ class Support7Task(HTMLTask):
                 text_entry=self._school_entry)
 
 
-class Support8Task(HTMLTask):
+class Support6Task(HTMLTask):
 
     def __init__(self, task_master):
         HTMLTask.__init__(self, task_master)
         self._name = _('Confirmation')
         self.uid = CONFIRMATION_TASK
-        self._uri = ['support8.html', 'support8a.html']
+        self._uri = ['support6a.html', 'support6b.html']
 
     def get_requires(self):
         return [_ENTER_NAME_TASK, _ENTER_SCHOOL_TASK,_ENTER_EMAIL_TASK]
@@ -668,13 +668,13 @@ class Support8Task(HTMLTask):
         return graphics, self._prompt
 
 
-class Support9Task(HTMLTask):
+class Support7Task(HTMLTask):
 
     def __init__(self, task_master):
         HTMLTask.__init__(self, task_master)
         self._name = _('Enter Your Bug Report')
         self.uid = _ENTER_BUG_REPORT_TASK
-        self._uri = ['support9a.html', 'support9b.html']
+        self._uri = ['support7a.html', 'support7b.html']
         self._entry = None
         self._height = 60
         self._prompt = _('Submit')

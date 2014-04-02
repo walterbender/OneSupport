@@ -202,22 +202,23 @@ class TaskMaster(Gtk.Alignment):
             self._first_time = True
             self._run_task(section_index, task_index)
         else:
+            self.show_page('completed.html')
+            # Activity will close after this button is clicked
+            _logger.debug('setting completed to True')
+            self.completed = True
+            self.task_button.set_label(_('Exit'))
+
+    def show_page(self, url):
             self._destroy_graphics()
             graphics = Graphics()
             self._graphics = graphics
-            url = os.path.join(self.get_bundle_path(), 'html-content',
-                               'completed.html')
+            url = os.path.join(self.get_bundle_path(), 'html-content', url)
             self._graphics.add_uri(
                 'file://' + url + '?NAME=' + utils.get_safe_text(
                     self.read_task_data(NAME_UID).replace(',', ' ')))
             self._graphics.set_zoom_level(0.667)
             self._graphics_grid.attach(self._graphics, 0, 0, 1, 1)
             self._graphics.show()
-
-            # Activity will close after this button is clicked
-            _logger.debug('setting completed to True')
-            self.completed = True
-            self.task_button.set_label(_('Exit'))
 
     def enter_entered(self):
         ''' Enter was entered in a text entry '''

@@ -25,7 +25,7 @@ import logging
 _logger = logging.getLogger('training-activity-tasks')
 
 from activity import (NAME_UID, EMAIL_UID, SCHOOL_UID, SCHOOL_NAME,
-                      POST_CODE, PHONE_NUMBER_UID)
+                      POST_CODE, PHONE_NUMBER_UID, ERROR_REPORT)
 from graphics import Graphics, FONT_SIZES
 import utils
 from reporter import send_report
@@ -704,6 +704,7 @@ class Support7Task(HTMLTask):
         text_buffer = self._entry.get_buffer()
         bounds = text_buffer.get_bounds()
         text = text_buffer.get_text(bounds[0], bounds[1], True)
+        self._task_master.write_task_data(ERROR_REPORT, text)
 
         name = self._task_master.read_task_data(NAME_UID)
         if name is None:  # Should never happen
@@ -736,15 +737,19 @@ class Support7Task(HTMLTask):
                 'files': files}
 
         self._task_master.activity.busy_cursor()
+        self._task_master.show_page('progress.html')
         GObject.idle_add(self._send_report, data)
         return True
 
     def _send_report(self, data):
         try:
             send_report(data)
+            # If we are successful, don't save the error report locally.
+            self._task_master.write_task_data(ERROR_REPORT, '')
         except Exception as e:
             _logger.error('send report failed: %s' % e)
             # FIXME: put up some sort of error page
+            self._task_master.show_page('server-error.html')
         self._task_master.activity.reset_cursor()
 
     def _upload_cb(self, widget, i):
@@ -773,7 +778,11 @@ class Support7Task(HTMLTask):
         graphics.add_uri('file://' + url, height=self._height)
         graphics.set_zoom_level(self._zoom_level)
 
+        error_report = self._task_master.read_task_data(ERROR_REPORT)
         self._entry = graphics.add_text_view()
+        if error_report is not None:
+            text_buffer = self._entry.get_buffer()
+            text_buffer.set_text(error_report)
         self._task_master.activity.set_copy_widget(text_entry=self._entry)
         self._task_master.activity.set_paste_widget(text_entry=self._entry)
 

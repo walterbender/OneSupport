@@ -36,6 +36,7 @@ SCHOOL_NAME = 'school_name'
 POST_CODE = 'post_code'
 PHONE_NUMBER_UID = 'phone_number'
 ROLE_UID = 'role'
+ERROR_REPORT = 'error_report'
 
 from taskmaster import TaskMaster
 from graphics import Graphics, FONT_SIZES

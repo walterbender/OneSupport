@@ -24,6 +24,7 @@ import logging
 _logger = logging.getLogger('one-support-taskmaster')
 
 import tasks
+from tasks import CONFIRMATION_TASK
 from progressbar import ProgressBar
 import utils
 from graphics import Graphics
@@ -61,6 +62,7 @@ class TaskMaster(Gtk.Alignment):
         self.no_task = None
         self._task_list = tasks.get_tasks(self)
         self._uid = None
+        self.returning_user = False
 
         self._assign_required()
 
@@ -73,7 +75,8 @@ class TaskMaster(Gtk.Alignment):
            school is None:
             self.current_task = 0
         else:
-            self.current_task = 5
+            self.current_task = self.uid_to_task_number(CONFIRMATION_TASK)
+            self.returning_user = True
 
         self._graphics_grid = Gtk.Grid()
         self._graphics_grid.set_row_spacing(style.DEFAULT_SPACING)

@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>One Support</title>
+<link href="main.css" rel="stylesheet" type="text/css">
+
+<script language="javascript">
+  var QueryString = function () {
+  // This function grabs parameters from the URL, e.g., name=foo
+  // the return value is assigned to QueryString, e.g., QueryString.foo
+    var query_string = {};
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+      var pair = vars[i].split("=");
+      var res = unescape(pair[1])
+      if (typeof query_string[pair[0]] === "undefined") {
+        query_string[pair[0]] = res;
+    	// If second entry with this name
+      } else if (typeof query_string[pair[0]] === "string") {
+        var arr = [ query_string[pair[0]], res ];
+        query_string[pair[0]] = arr;
+    	// If third or later entry with this name
+      } else {
+        query_string[pair[0]].push(res);
+      }
+    } 
+    return query_string;
+  } ();
+</script>
+
+</head>
+
+<body>
+<div class="content">
+  <div class="heading">
+    <p>Welcome back.</p>
+  </div>
+  <p>These details will be used to create your profile with One Education.
+Please confirm that the data below are correct.</p>
+  <p>
+    <script>
+      document.write(QueryString.NAME);
+    </script>
+  </p>
+  <p>
+    <script>
+      document.write(QueryString.EMAIL);
+    </script>
+  </p>
+  <p>
+    <script>
+      document.write(QueryString.PHONE);
+    </script>
+  </p>
+  <p>
+    <script>
+      document.write(QueryString.SCHOOL);
+    </script>
+  </p>
+<p>If they are not correct, go back and change them before pressing Next on this page.
+If you need to change them at a later date, contact support via 1800&nbsp;663&nbsp;338</p>
+</div>
+</body>
+</html>

@@ -35,7 +35,7 @@ _ENTER_NAME_TASK = 'enter-name-task'
 _ENTER_EMAIL_TASK = 'enter-email-task'
 _ENTER_SCHOOL_TASK = 'enter-school-task'
 _ENTER_BUG_REPORT_TASK = 'enter-bug-report-task'
-_CONFIRMATION_TASK = 'confirmation-task'
+CONFIRMATION_TASK = 'confirmation-task'
 
 def get_tasks(task_master):
     task_list = [
@@ -624,8 +624,8 @@ class Support8Task(HTMLTask):
     def __init__(self, task_master):
         HTMLTask.__init__(self, task_master)
         self._name = _('Confirmation')
-        self.uid = _CONFIRMATION_TASK
-        self._uri = 'support8.html'
+        self.uid = CONFIRMATION_TASK
+        self._uri = ['support8.html', 'support8a.html']
 
     def get_requires(self):
         return [_ENTER_NAME_TASK, _ENTER_SCHOOL_TASK,_ENTER_EMAIL_TASK]
@@ -644,13 +644,19 @@ class Support8Task(HTMLTask):
         school = self._task_master.read_task_data(SCHOOL_NAME)
         if school is None:  # Should never happen
             school = ''
-        url = os.path.join(self._task_master.get_bundle_path(), 'html-content',
-                           '%s?NAME=%s&EMAIL=%s&PHONE=%s&SCHOOL=%s' %
-                           (self._uri,
-                            utils.get_safe_text(name),
-                            utils.get_safe_text(email_address),
-                            utils.get_safe_text(phone_number),
-                            utils.get_safe_text(school)))
+        if self._task_master.returning_user:
+            i = 1
+            self._task_master.returning_user = False
+        else:
+            i = 0
+        url = os.path.join(
+            self._task_master.get_bundle_path(), 'html-content',
+            '%s?NAME=%s&EMAIL=%s&PHONE=%s&SCHOOL=%s' %
+            (self._uri[i],
+             utils.get_safe_text(name),
+             utils.get_safe_text(email_address),
+             utils.get_safe_text(phone_number),
+             utils.get_safe_text(school)))
 
         graphics = Graphics()
         webkit = graphics.add_uri('file://' + url, height=400)
@@ -678,7 +684,7 @@ class Support9Task(HTMLTask):
         self._mimetypes = []
 
     def get_requires(self):
-        return [_CONFIRMATION_TASK]
+        return [CONFIRMATION_TASK]
 
     def test(self):
         return self._is_valid_bug_report_entry()

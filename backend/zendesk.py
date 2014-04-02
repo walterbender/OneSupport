@@ -15,7 +15,15 @@ from gi.repository import GConf
 from gi.repository import Soup
 
 
-class ZendeskError(Exception):
+class ConfigError(Exception):
+    pass
+
+
+class NetworkError(Exception):
+    pass
+
+
+class ServerError(Exception):
     pass
 
 
@@ -28,7 +36,7 @@ class FieldHelper(object):
         client = GConf.Client.get_default()
         raw = client.get(self.IDS)
         if not raw:
-            raise ZendeskError('soupdesk is missing fields')
+            raise ConfigError('soupdesk is missing fields')
         self._ids = [int(e.get_string()) for e in raw.get_list()]
 
     def get_field(self, index, value):
@@ -48,9 +56,10 @@ class Request(object):
         self._url = client.get_string(self.URL)
         self._token = client.get_string(self.TOKEN)
         self._data = None
+        self._code = None
 
         if not self._url or not self._token:
-            raise ZendeskError('soupdesk is missing URL or TOKEN')
+            raise ConfigError('soupdesk is missing URL or TOKEN')
 
     def _authorize(self):
         return 'Basic %s' % self._token
@@ -63,16 +72,22 @@ class Request(object):
         message.request_headers.append('Content-Type', content)
         message.request_headers.append('Authorization', self._authorize())
 
-        #logger = Soup.Logger.new(Soup.LoggerLogLevel.BODY, -1)
-
         session = Soup.SessionSync()
-        #session.add_feature(logger)
         session.add_feature_by_type(Soup.ProxyResolverDefault)
         session.send_message(message)
 
         self._data = message.response_body.data
-        if not 200 <= message.status_code < 300:
-            raise ZendeskError(self._data)
+        self._code = message.status_code
+
+        if self._code < 100:
+            raise NetworkError('transmission failed with %d, %s, %s',
+                               self._code, Soup.status_get_phrase(self._code),
+                               str(self._data))
+
+        if not 200 <= self._code < 300:
+            raise ServerError('operation failed with %d, %s, %s',
+                              self._code, Soup.status_get_phrase(self._code),
+                              str(self._data))
 
 
 class Ticket(Request):

@@ -252,8 +252,7 @@ class TaskMaster(Gtk.Alignment):
                 else:
                     _logger.debug('in task_button_cb... incrementing task')
                     self.current_task += 1
-                    GObject.idle_add(self.task_master)
-                    # self.task_master()
+                    self.task_master()
 
     def _my_turn_button_cb(self, button):
         ''' Take me to the Home Page and select favorites view. '''

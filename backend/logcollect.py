@@ -238,8 +238,10 @@ class MachineProperties:
             s += '~' + os.path.basename(path) + '\n'
             
         return s
-        
-        
+
+    def installed_packages(self):
+        return self._read_popen('su --session-command "/usr/bin/yum history package-list \*"')
+
 
 class LogCollect:
     """Collect XO logfiles and machine metadata for reporting to OLPC
@@ -392,6 +394,7 @@ class LogCollect:
             s += "\n[/sbin/route -n]\n%s\n" % self._mp.route_n()
             
             s += '\n[Installed Activities]\n%s\n' % self._mp.installed_activities()
+            s += '\n[Installed Packages]\n%s\n' % self._mp.installed_packages()
     
             s += '\n[df -a]\n%s\n' % self._mp.df_a()
             s += '\n[ps auxwww]\n%s\n' % self._mp.ps_auxfwww()

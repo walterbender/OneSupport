@@ -38,6 +38,7 @@ PHONE_NUMBER_UID = 'phone_number'
 ROLE_UID = 'role'
 ERROR_REPORT = 'error_report'
 
+from aboutpanel import AboutPanel
 from taskmaster import TaskMaster
 from graphics import Graphics, FONT_SIZES
 import utils
@@ -332,6 +333,17 @@ class OneSupportActivity(activity.Activity):
         self._paste_button.connect('clicked', self._paste_cb)
         self._paste_button.set_sensitive(False)
 
+        self._about_button = ToolButton('computer')
+        self._about_button.set_tooltip(_('About Computer'))
+        self._toolbox.toolbar.insert(self._about_button, -1)
+        self._about_button.show()
+        self._about_button.connect('clicked', self._about_cb)
+
+        about_panel = AboutPanel()
+        about_panel.show()
+        self._about_palette = self._about_button.get_palette()
+        self._about_palette.set_content(about_panel)
+
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
@@ -382,6 +394,11 @@ class OneSupportActivity(activity.Activity):
         else:
             _logger.debug('No widget set for paste (%s).' %
                           self.clipboard_text)
+
+    def _about_cb(self, button):
+        self._about_palette.popup(
+            immediate=True,
+            state=self._about_palette.SECONDARY)
 
     def _fullscreen_cb(self, button):
         ''' Hide the Sugar toolbars. '''

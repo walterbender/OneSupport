@@ -45,11 +45,15 @@ import zipfile
 import glob
 import sys
 import time
+import re
 
 # The next couple are used by LogSend
 import httplib
 import mimetypes
 import urlparse
+
+from gi.repository import GConf
+
 
 MFG_DATA_PATHS = ['/ofw/mfg-data/', '/proc/device-tree/mfg-data/']
 
@@ -62,6 +66,9 @@ class MachineProperties:
         """Read the entire contents of a file and return it as a string"""
 
         data = ''
+
+        if not os.path.exists(filename):
+            return data
 
         f = open(filename)
         try:
@@ -241,6 +248,27 @@ class MachineProperties:
 
     def installed_packages(self):
         return self._read_popen('su --session-command "/usr/bin/yum history package-list \*"')
+
+    def build_information(self):
+        return self.__read_file('/boot/olpc_build').strip()
+
+    def packages_snapshot(self):
+        path = '/desktop/sugar/collaboration/harvest_reponame'
+        exp = '@%s(\s*)(\d+):(\w+)'
+        cmd = 'su --session-command "/usr/bin/yum -C version installed -v"'
+
+        client = GConf.Client.get_default()
+        reponame = client.get_string(path)
+
+        if not reponame:
+            return ''
+
+        try:
+            raw = self._read_popen(cmd)
+            match = re.search(exp % reponame, raw)
+            return match.groups(0)[2]
+        except:
+            return ''
 
 
 class LogCollect:

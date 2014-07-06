@@ -227,6 +227,15 @@ class OneSupportActivity(activity.Activity):
             self._fixed.move(self._progress_area, 0, Gdk.Screen.height() - dy2)
             self._fixed.move(self._button_area, 0, Gdk.Screen.height() - dy1)
 
+    def toolbar_expanded(self):
+        if self.activity_button.is_expanded():
+            return True
+        elif self.edit_toolbar_button.is_expanded():
+            return True
+        elif self.view_toolbar_button.is_expanded():
+            return True
+        return False
+
     def get_activity_version(self):
         info_path = os.path.join(self.bundle_path, 'activity', 'activity.info')
         try:

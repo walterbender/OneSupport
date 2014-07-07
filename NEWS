@@ -1,3 +1,9 @@
+1.2
+
+* Added missing method: is_expanded (Martin Abente)
+* Added system details in a toolbar palette (Martin Abente)
+
+
 1.1
 
 * New backend support (Martin Abente)

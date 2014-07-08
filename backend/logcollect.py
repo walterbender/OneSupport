@@ -270,6 +270,17 @@ class MachineProperties:
         except:
             return ''
 
+    def wireless_firmware(self):
+        exp = 'firmware-version: (.*)\n'
+        cmd = 'ethtool -i eth0'
+
+        try:
+            raw = self._read_popen(cmd)
+            match = re.search(exp, raw)
+            return match.groups(0)[0]
+        except:
+            return ''
+
 
 class LogCollect:
     """Collect XO logfiles and machine metadata for reporting to OLPC
@@ -412,6 +423,7 @@ class LogCollect:
             s += 'board-revision: %s\n' %  self._mp.laptop_board_revision()
             s += 'keyboard: %s\n' %  self._mp.laptop_keyboard()
             s += 'wireless_mac: %s\n' %  self._mp.laptop_wireless_mac()
+            s += 'wireless_firmware: %s\n' % self._mp.wireless_firmware()
             s += 'firmware: %s\n' %  self._mp.laptop_bios_version()
             s += 'country: %s\n' % self._mp.laptop_country()
             s += 'localization: %s\n' % self._mp.laptop_localization()

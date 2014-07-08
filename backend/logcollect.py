@@ -257,8 +257,11 @@ class MachineProperties:
         exp = '@%s(\s*)(\d+):(\w+)'
         cmd = 'su --session-command "/usr/bin/yum -C version installed -v"'
 
-        client = GConf.Client.get_default()
-        reponame = client.get_string(path)
+        try:
+            client = GConf.Client.get_default()
+            reponame = client.get_string(path)
+        except:
+            reponame = ''
 
         if not reponame:
             return ''

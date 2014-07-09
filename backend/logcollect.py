@@ -275,7 +275,7 @@ class MachineProperties:
 
     def wireless_firmware(self):
         exp = 'firmware-version: (.*)\n'
-        cmd = 'ethtool -i eth0'
+        cmd = 'su --session-command "/usr/sbin/ethtool -i eth0"'
 
         try:
             raw = self._read_popen(cmd)

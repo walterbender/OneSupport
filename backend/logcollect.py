@@ -430,7 +430,6 @@ class LogCollect:
             s += 'firmware: %s\n' %  self._mp.laptop_bios_version()
             s += 'country: %s\n' % self._mp.laptop_country()
             s += 'localization: %s\n' % self._mp.laptop_localization()
-            s += 'build information: %s\n' % self._mp.build_information()
             s += 'snapshot: %s\n' % self._mp.packages_snapshot()
                 
             s += self._mp.battery_info()

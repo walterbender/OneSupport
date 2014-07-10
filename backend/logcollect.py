@@ -257,8 +257,11 @@ class MachineProperties:
         exp = '@%s(\s*)(\d+):(\w+)'
         cmd = 'su --session-command "/usr/bin/yum -C version installed -v"'
 
-        client = GConf.Client.get_default()
-        reponame = client.get_string(path)
+        try:
+            client = GConf.Client.get_default()
+            reponame = client.get_string(path)
+        except:
+            reponame = ''
 
         if not reponame:
             return ''
@@ -267,6 +270,17 @@ class MachineProperties:
             raw = self._read_popen(cmd)
             match = re.search(exp % reponame, raw)
             return match.groups(0)[2]
+        except:
+            return ''
+
+    def wireless_firmware(self):
+        exp = 'firmware-version: (.*)\n'
+        cmd = 'su --session-command "/usr/sbin/ethtool -i eth0"'
+
+        try:
+            raw = self._read_popen(cmd)
+            match = re.search(exp, raw)
+            return match.groups(0)[0]
         except:
             return ''
 
@@ -412,9 +426,11 @@ class LogCollect:
             s += 'board-revision: %s\n' %  self._mp.laptop_board_revision()
             s += 'keyboard: %s\n' %  self._mp.laptop_keyboard()
             s += 'wireless_mac: %s\n' %  self._mp.laptop_wireless_mac()
+            s += 'wireless_firmware: %s\n' % self._mp.wireless_firmware()
             s += 'firmware: %s\n' %  self._mp.laptop_bios_version()
             s += 'country: %s\n' % self._mp.laptop_country()
             s += 'localization: %s\n' % self._mp.laptop_localization()
+            s += 'snapshot: %s\n' % self._mp.packages_snapshot()
                 
             s += self._mp.battery_info()
             

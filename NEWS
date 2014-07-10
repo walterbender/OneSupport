@@ -1,3 +1,12 @@
+1.4
+
+* fix ethtool execution from UI
+* remove repeated build information
+
+1.3
+
+* Added snaphot, build and firmware version to log.
+
 1.2
 
 * Added missing method: is_expanded (Martin Abente)

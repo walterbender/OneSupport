@@ -344,7 +344,7 @@ class OneSupportActivity(activity.Activity):
         self._paste_button.set_sensitive(False)
 
         self._about_button = ToolButton('computer')
-        self._about_button.set_tooltip(_('About Computer'))
+        self._about_button.set_tooltip(_('About my computer'))
         self._toolbox.toolbar.insert(self._about_button, -1)
         self._about_button.show()
         self._about_button.connect('clicked', self._about_cb)

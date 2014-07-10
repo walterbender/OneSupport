@@ -38,6 +38,7 @@ _ENTER_SCHOOL_TASK = 'enter-school-task'
 _ENTER_BUG_REPORT_TASK = 'enter-bug-report-task'
 CONFIRMATION_TASK = 'confirmation-task'
 
+
 def get_tasks(task_master):
     task_list = [
         {'name': _('One Support'),
@@ -221,7 +222,7 @@ class Support2Task(Task):
     def _first_enter_entered(self, widget):
         # Switch focus to last entry
         if len(self._first_entry.get_text()) > 1:
-            self.grab_focus()
+            self._last_entry.grab_focus()
 
     def _last_enter_entered(self, widget):
         if len(self._first_entry.get_text()) > 1 and \

@@ -794,7 +794,9 @@ class Support7Task(HTMLTask):
         if name is not None:
             self._labels[i] = name
             self._buttons[i].set_label(self._labels[i])
-            self._files[i] = dsobject.file_path
+            path = utils.copy_to_tmp(dsobject.file_path,
+                                     self._task_master.activity.tmp_path)
+            self._files[i] = path
             self._mimetypes[i] = dsobject.metadata['mime_type']
 
     def get_graphics(self):
@@ -818,6 +820,7 @@ class Support7Task(HTMLTask):
             button = graphics.add_button(_('upload attachment'),
                                          self._upload_cb, arg=i)
             self._buttons.append(button)
+            self._labels.append(None)
             self._files.append(None)
             self._mimetypes.append(None)
 

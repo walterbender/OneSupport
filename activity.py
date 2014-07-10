@@ -91,6 +91,7 @@ class OneSupportActivity(activity.Activity):
                        style.COLOR_WHITE.get_gdk_color())
 
         self.bundle_path = activity.get_bundle_path()
+        self.tmp_path = os.path.join(activity.get_activity_root(), 'tmp')
 
         self._copy_entry = None
         self._paste_entry = None

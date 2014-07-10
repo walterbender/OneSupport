@@ -226,6 +226,13 @@ def look_for_xls(path):
     return glob.glob(os.path.join(path, '*.xls'))
 
 
+def copy_to_tmp(dspath, tmppath):
+    if os.path.exists(dspath):
+        path = os.path.join(tmppath, os.path.basename(dspath))
+        results = subprocess.check_output(['cp', dspath, path])
+        return path
+
+
 def remove_xlw_suffix(path):
     if os.path.exists(path):
         if path[-4:] == '.xlw':

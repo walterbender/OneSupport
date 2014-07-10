@@ -792,8 +792,8 @@ class Support7Task(HTMLTask):
             chooser.destroy()
             del chooser
         if name is not None:
-            span = 'size="large"'
-            self._labels[i].set_markup('<span %s>%s</span>' % (span, name))
+            self._labels[i] = name
+            self._buttons[i].set_label(self._labels[i])
             self._files[i] = dsobject.file_path
             self._mimetypes[i] = dsobject.metadata['mime_type']
 
@@ -815,11 +815,9 @@ class Support7Task(HTMLTask):
         self._task_master.activity.set_paste_widget(text_entry=self._entry)
 
         for i in range(3):
-            button, label = graphics.add_button_and_label()
-            button.connect('clicked', self._upload_cb, i)
-            label.set_use_markup(True)
+            button = graphics.add_button(_('upload attachment'),
+                                         self._upload_cb, arg=i)
             self._buttons.append(button)
-            self._labels.append(label)
             self._files.append(None)
             self._mimetypes.append(None)
 

@@ -1,7 +1,15 @@
+1.5
+
+* Fixed several issues reported in AD-44
+ - centered upload buttons
+ - enter in first name advances to last name entry
+ - make temporary files for attachments to circumvent race condition
+ - fixed typo on About my Computer panel
+
 1.4
 
-* fix ethtool execution from UI
-* remove repeated build information
+* Fixed ethtool execution from UI  (Martin Abente)
+* Removed repeated build information  (Martin Abente)
 
 1.3
 

@@ -192,7 +192,7 @@ class Graphics(Gtk.Alignment):
     def add_text_view(self, text=''):
         scrolled_window = Gtk.ScrolledWindow()
         scrolled_window.set_size_request(style.GRID_CELL_SIZE * 8,
-                                         style.GRID_CELL_SIZE * 5)
+                                         style.GRID_CELL_SIZE * 4)
         scrolled_window.set_policy(Gtk.PolicyType.NEVER,
                                    Gtk.PolicyType.AUTOMATIC)
         scrolled_window.set_shadow_type(Gtk.ShadowType.ETCHED_IN)

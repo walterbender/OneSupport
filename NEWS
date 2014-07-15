@@ -1,3 +1,9 @@
+1.6
+
+* Fxied several more issues:
+ - shrunk text_view so that all of the upload buttons appear
+ - set submit button to insensitive after pressing to eliminate double click
+
 1.5
 
 * Fixed several issues reported in AD-44

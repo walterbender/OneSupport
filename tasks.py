@@ -747,6 +747,7 @@ class Support7Task(HTMLTask):
 
         self._task_master.show_page('progress.html')
         self._task_master.activity.busy_cursor()
+        self._task_master.task_button.set_sensitive(False)
 
         # A timeout seems to be needed for the progress page to appear.
         # GObject.idle_add(self._send_report, data)
@@ -760,21 +761,25 @@ class Support7Task(HTMLTask):
             self._task_master.write_task_data(ERROR_REPORT, '')
             self._task_master.show_page('completed.html')
             self._task_master.task_button.set_label(_('Exit'))
+            self._task_master.task_button.set_sensitive(True)
             self._task_master.completed = True
         except ServerError as e:
             _logger.error('send report failed: %s' % e)
             self._task_master.show_page('server-error.html')
             self._task_master.task_button.set_label(_('Exit'))
+            self._task_master.task_button.set_sensitive(True)
             self._task_master.completed = True
         except NetworkError as e:
             _logger.error('send report failed: %s' % e)
             self._task_master.show_page('network-error.html')
             self._task_master.task_button.set_label(_('Exit'))
+            self._task_master.task_button.set_sensitive(True)
             self._task_master.completed = True
         except ConfigError as e:
             _logger.error('send report failed: %s' % e)
             self._task_master.show_page('config-error.html')
             self._task_master.task_button.set_label(_('Exit'))
+            self._task_master.task_button.set_sensitive(True)
             self._task_master.completed = True
         self._task_master.activity.reset_cursor()
 

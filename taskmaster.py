@@ -232,6 +232,8 @@ class TaskMaster(Gtk.Alignment):
                 GObject.idle_add(self.activity.close)
             else:
                 self.task_master()
+        else:
+            self.task_button.set_sensitive(False)
 
     def _task_button_cb(self, button):
         ''' The button at the bottom of the page for each task: used to

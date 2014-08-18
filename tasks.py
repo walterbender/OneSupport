@@ -347,6 +347,9 @@ class Support4Task(HTMLTask):
         return pattern.match(phone_number) is not None
 
     def after_button_press(self):
+        if not self._is_valid_phone_entry() or \
+           not self._is_valid_email_entry():
+            return False
         _logger.debug('Writing email address: %s' % self._entry[0].get_text())
         self._task_master.write_task_data(EMAIL_UID, self._entry[0].get_text())
         _logger.debug('Writing phone number: %s' % self._entry[1].get_text())
@@ -630,7 +633,7 @@ class Support6Task(HTMLTask):
         self._uri = ['support6a.html', 'support6b.html']
 
     def get_requires(self):
-        return [_ENTER_NAME_TASK, _ENTER_SCHOOL_TASK,_ENTER_EMAIL_TASK]
+        return [_ENTER_NAME_TASK, _ENTER_SCHOOL_TASK, _ENTER_EMAIL_TASK]
 
     def get_graphics(self):
         self._entries = []

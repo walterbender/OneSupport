@@ -95,6 +95,7 @@ class OneSupportActivity(activity.Activity):
 
         self._copy_entry = None
         self._paste_entry = None
+        self._about_panel_visible = False
         self._webkit = None
         self._clipboard_text = ''
         self._fixed = None
@@ -228,6 +229,8 @@ class OneSupportActivity(activity.Activity):
             self._fixed.move(self._progress_area, 0, Gdk.Screen.height() - dy2)
             self._fixed.move(self._button_area, 0, Gdk.Screen.height() - dy1)
 
+        self._about_panel_visible = False
+
     def toolbar_expanded(self):
         if self.activity_button.is_expanded():
             return True
@@ -346,6 +349,8 @@ class OneSupportActivity(activity.Activity):
         self._about_button = ToolButton('computer')
         self._about_button.set_tooltip(_('About my computer'))
         self._toolbox.toolbar.insert(self._about_button, -1)
+        self._about_button.palette_invoker.props.lock_palette = True
+        self._about_button.set_sensitive(True)
         self._about_button.show()
         self._about_button.connect('clicked', self._about_cb)
 
@@ -406,9 +411,13 @@ class OneSupportActivity(activity.Activity):
                           self.clipboard_text)
 
     def _about_cb(self, button):
-        self._about_palette.popup(
-            immediate=True,
-            state=self._about_palette.SECONDARY)
+        if not self._about_palette.is_up() and not self._about_panel_visible:
+            self._about_palette.popup(
+                immediate=True, state=self._about_palette.SECONDARY)
+            self._about_panel_visible = True
+        else:
+            self._about_palette.popdown(immediate=True)
+            self._about_panel_visible = False
 
     def _fullscreen_cb(self, button):
         ''' Hide the Sugar toolbars. '''
